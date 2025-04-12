@@ -6,15 +6,15 @@
 #    By: lformank <lformank@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/05 16:20:21 by lformank          #+#    #+#              #
-#    Updated: 2025/04/09 16:41:29 by lformank         ###   ########.fr        #
+#    Updated: 2025/04/11 13:02:26 by lformank         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -g -pthread
 RM = rm -f
-SUBJS = philo.c init.c utils.c
-OBJS = philo.o init.o utils.o
+SUBJS = philo.c init.c utils.c routine.c conditions.c
+OBJS = philo.o init.o utils.o routine.o conditions.o
 
 all: philo
 
