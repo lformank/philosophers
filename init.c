@@ -34,16 +34,19 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 	philo->num_of_meals = ft_atoi(av[5]);
 	philo->philo = malloc(sizeof(pthread_t) * (philo->num_of_phil));
 	philo->ms = malloc(sizeof(struct timeval) * 1);
+	philo->start = malloc(sizeof(struct timeval) * 1);
+	philo->ate = malloc(sizeof(struct timeval) * 1);
 	philo->lfork = malloc(sizeof(bool) * 1);
 	*(philo)->lfork = 0;
 	philo->rfork = malloc(sizeof(bool) * 1);
 	*(philo)->rfork = 0;
 	philo->die = malloc(sizeof(int) * 1);
 	*(philo)->die = 0;
-	philo->ate = malloc(sizeof(int) * 1);
-	*(philo)->ate = 0;
-	if (!philo->philo || !philo->ms || !philo->die || !philo->ate
-		|| !philo->lfork || !philo->rfork)
+	philo->full = malloc(sizeof(int) * 1);
+	*(philo)->full = 0;
+
+	if (!philo->philo || !philo->ms || !philo->die || !philo->full
+		|| !philo->lfork || !philo->rfork || !philo->start)
 		return (0);
 	return (1);
 }

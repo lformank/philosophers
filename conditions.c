@@ -16,7 +16,7 @@ void	wrong_input(void)
 {
 	write(2, "Wrong input.\nTry again using this format: \"./philo <num of \
 philosophers> <time to die> <time to eat> <time to sleep> <number of \
-meals>\"", 141);
+meals>\"", 136);
 	return ;
 }
 

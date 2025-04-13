@@ -46,8 +46,10 @@ typedef struct s_philo
 	bool			*lfork;
 	bool			*rfork;
 	bool			*die;
-	bool			*ate;
+	bool			*full;
 	struct timeval	*ms;
+	struct timeval	*start;
+	struct timeval	*ate;
 	pthread_mutex_t	lock;
 }	t_philo;
 

@@ -20,10 +20,13 @@ void	free_input(t_input *input)
 	free(input->forks);
 	while (++i < input->num_of_phil)
 	{
-		free(input->philos[i].ate);
+		free(input->philos[i].full);
 		free(input->philos[i].die);
 		free(input->philos[i].ms);
 		free(input->philos[i].philo);
+		free(input->philos[i].lfork);
+		free(input->philos[i].rfork);
+		free(input->philos[i].start);
 	}
 	free((input)->philos);
 }
@@ -31,9 +34,7 @@ void	free_input(t_input *input)
 int	main(int ac, char **av)
 {
 	t_input		input;
-	int			i;
 
-	i = -1;
 	if (!init(ac, av))
 		return (0);
 	if (!setup_input(ac, av, &input))
