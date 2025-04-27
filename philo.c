@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:14:25 by lformank          #+#    #+#             */
-/*   Updated: 2025/04/25 15:11:01 by lformank         ###   ########.fr       */
+/*   Updated: 2025/04/26 13:54:28 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,18 @@ void	free_input(t_input *input)
 	int	i;
 
 	i = -1;
-	// free(input->forks);
+	while (++i < input->num_of_phil)
+		pthread_mutex_destroy(&(input->forks[i]));
+	free(input->forks);
+	i = -1;
 	while (++i < input->num_of_phil)
 	{
 		free(input->philos[i].full);
 		free(input->philos[i].die);
-		free(input->philos[i].ms);
+		free(input->philos[i].timer);
 		free(input->philos[i].philo);
-		// free(input->philos[i].lfork);
-		// free(input->philos[i].rfork);
 		free(input->philos[i].start);
-		free(input->philos[i].ate);
+		free(input->philos[i].last);
 	}
 	free((input)->philos);
 }

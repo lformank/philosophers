@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/04/25 16:12:49 by lformank         ###   ########.fr       */
+/*   Updated: 2025/04/26 13:50:39 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ typedef struct s_input
 	int				num_of_meals;
 	pthread_mutex_t	*forks;
 	struct s_philo	*philos;
-	pthread_t		death;
+	t_death			*death;
 }	t_input;
 
 typedef struct s_philo
@@ -45,12 +45,22 @@ typedef struct s_philo
 	pthread_t		*philo;
 	pthread_mutex_t	*lfork;
 	pthread_mutex_t	*rfork;
+	bool			ready;
 	bool			*die;
 	bool			*full;
-	struct timeval	*ms;
+	struct timeval	*timer;
 	struct timeval	*start;
-	struct timeval	*ate;
+	struct timeval	*last;
 }	t_philo;
+
+typedef struct s_death
+{
+	t_philo		*philo;
+	t_input		*input;
+	pthread_t	*thread; 
+	bool		dead;
+	bool		ate;
+}	t_death;
 
 /* INICIALIZE */
 int	init(int ac, char *av[]);
@@ -69,4 +79,5 @@ int		is_it_num(char *av[], int ac);
 
 /* ROUTINE */
 void	*routine(void *input);
+void	*droutine(void *input);
 #endif

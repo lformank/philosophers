@@ -6,15 +6,22 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/04/25 16:12:03 by lformank         ###   ########.fr       */
+/*   Updated: 2025/04/26 13:54:35 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
 void	get_time(t_philo *philo, struct timeval	*t)
 {
-	gettimeofday(philo->ms, NULL);
-	philo->ms->tv_sec = philo->ms->tv_sec * 1000 + philo->ms->tv_usec / 1000;
+	gettimeofday(philo->timer, NULL);
+	philo->timer->tv_sec = philo->timer->tv_sec * 1000 + philo->timer->tv_usec / 1000;
+	gettimeofday(t, NULL);
+	t->tv_sec = t->tv_sec * 1000 + t->tv_usec / 1000;
+}
+
+void	now(struct timeval	*t)
+{
 	gettimeofday(t, NULL);
 	t->tv_sec = t->tv_sec * 1000 + t->tv_usec / 1000;
 }
@@ -23,16 +30,10 @@ void	thinking(t_philo *philo)
 {
 	struct timeval	t;
 
-
 	get_time(philo, &t);
-	while (t.tv_sec - philo->ms->tv_sec < 1)
-	{
-		gettimeofday(&t, NULL);
-		t.tv_sec = t.tv_sec * 1000 + t.tv_usec / 1000;
-	}
-	gettimeofday(&t, NULL);
-	t.tv_sec = t.tv_sec * 1000 + t.tv_usec / 1000;
-	printf("%d: start: %ld ms, thinking: %ld ms\n", philo->num, t.tv_sec - philo->start->tv_sec, t.tv_sec - philo->ms->tv_sec);
+	while (t.tv_sec - philo->timer->tv_sec < 100)
+		now(&t);
+	printf("%d: start: %ld ms, thinking: %ld ms\n", philo->num, t.tv_sec - philo->start->tv_sec, t.tv_sec - philo->timer->tv_sec);
 }
 
 void	get_fork(t_philo *philo)
@@ -41,13 +42,13 @@ void	get_fork(t_philo *philo)
 	{
 		pthread_mutex_lock(philo->lfork);
 		pthread_mutex_lock(philo->rfork);
-		printf("%d lfork: %p rfork: %p\n", philo->num, philo->lfork, philo->rfork);
+		philo->ready = true;
 	}
 	if (philo->num % 2 == 1)
 	{
 		pthread_mutex_lock(philo->rfork);
 		pthread_mutex_lock(philo->lfork);
-		printf("%d lfork: %p rfork: %p\n", philo->num, philo->lfork, philo->rfork);
+		philo->ready = true;
 	}
 }
 
@@ -55,26 +56,16 @@ void	eating(t_philo *philo)
 {
 	struct timeval	t;
 
-	pthread_mutex_init(philo->lfork, NULL);
-	pthread_mutex_init(philo->rfork, NULL);
-	while (philo->lfork->__data.__lock && philo->rfork->__data.__lock)
-		;
 	get_fork(philo);
 	get_time(philo, &t);
+	now(&philo->last);
 	if (philo->lfork && philo->rfork)
-	{
-		while (t.tv_sec - philo->ms->tv_sec < philo->time_to_eat)
-		{
-			usleep(100);
-			gettimeofday(&t, NULL);
-			t.tv_sec = t.tv_sec * 1000 + t.tv_usec / 1000;
-		}
-	}
+		while (t.tv_sec - philo->timer->tv_sec < philo->time_to_eat)
+			now(&t);
 	pthread_mutex_unlock(philo->lfork);
 	pthread_mutex_unlock(philo->rfork);
-	pthread_mutex_destroy(philo->lfork);
-	pthread_mutex_destroy(philo->rfork);
-	printf("%d: start: %ld ms, eating: %ld ms\n", philo->num, t.tv_sec - philo->start->tv_sec, t.tv_sec - philo->ms->tv_sec);
+	philo->ready = false;
+	printf("%d: start: %ld ms, eating: %ld ms\n", philo->num, t.tv_sec - philo->start->tv_sec, t.tv_sec - philo->timer->tv_sec);
 	}
 
 void	sleeping(t_philo *philo)
@@ -82,13 +73,9 @@ void	sleeping(t_philo *philo)
 	struct timeval	t;
 
 	get_time(philo, &t);
-	while (t.tv_sec - philo->ms->tv_sec < philo->time_to_sleep)
-	{
-		usleep(500);
-		gettimeofday(&t, NULL);
-		t.tv_sec = t.tv_sec * 1000 + t.tv_usec / 1000;
-	}
-	printf("%d: start: %ld ms, sleeping: %ld ms\n", philo->num, t.tv_sec - philo->start->tv_sec, t.tv_sec - philo->ms->tv_sec);
+	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_sleep)
+		now(&t);
+	printf("%d: start: %ld ms, sleeping: %ld ms\n", philo->num, t.tv_sec - philo->start->tv_sec, t.tv_sec - philo->timer->tv_sec);
 }
 
 void	*routine(void *philos)
@@ -98,8 +85,7 @@ void	*routine(void *philos)
 
 	i = 0;
 	philo = *(t_philo *)philos;
-	gettimeofday(philo.start, NULL);
-	philo.start->tv_sec = philo.start->tv_sec * 1000 + philo.start->tv_usec / 1000;
+	now(philo.start);
 	while (*(philo).die == 0)
 	{
 		if (philo.num_of_meals != 0 && i == philo.num_of_meals)
@@ -108,8 +94,8 @@ void	*routine(void *philos)
 		eating(&philo);
 		sleeping(&philo);
 		i++;
-		if (i == 3)
-			*(philo).die += 1;
+		// if (i == 3)
+		// 	*(philo).die += 1;
 	}
 	return (philos);
 }
