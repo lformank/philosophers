@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/04/26 13:50:39 by lformank         ###   ########.fr       */
+/*   Updated: 2025/04/27 14:55:55 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ typedef struct s_input
 	int				num_of_meals;
 	pthread_mutex_t	*forks;
 	struct s_philo	*philos;
-	t_death			*death;
+	struct s_death	*death;
 }	t_input;
 
 typedef struct s_philo
@@ -57,9 +57,8 @@ typedef struct s_death
 {
 	t_philo		*philo;
 	t_input		*input;
-	pthread_t	*thread; 
-	bool		dead;
-	bool		ate;
+	pthread_t	*thread;
+	bool		*ate;
 }	t_death;
 
 /* INICIALIZE */
@@ -70,8 +69,10 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[]);
 int	setup_forks(t_input *input);
 
 /* UTILS */
-int	ft_atoi(const char *nptr);
-int	ft_strlen(const char *s);
+int		ft_atoi(const char *nptr);
+int		ft_strlen(const char *s);
+void	now(struct timeval	*t);
+void	free_input(t_input *input);
 
 /* CONDITIONS */
 void	wrong_input(void);
@@ -79,5 +80,5 @@ int		is_it_num(char *av[], int ac);
 
 /* ROUTINE */
 void	*routine(void *input);
-void	*droutine(void *input);
+void	*droutine(void *table);
 #endif

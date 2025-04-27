@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/04/26 13:51:12 by lformank         ###   ########.fr       */
+/*   Updated: 2025/04/27 14:56:18 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,34 @@ int	setup_forks(t_input *input)
 			return (0);
 		}
 	}
-	input->death = malloc(sizeof(pthread_t) * 1);
-	if (!input->death)
+	return (1);
+}
+
+int	malloc_philo(t_philo *philo)
+{
+	philo->philo = malloc(sizeof(pthread_t) * (philo->num_of_phil));
+	if (!philo->philo)
+		return (0);
+	philo->timer = malloc(sizeof(struct timeval) * 1);
+	if (!philo->timer)
+		return (0);
+	philo->start = malloc(sizeof(struct timeval) * 1);
+	if (!philo->start)
+		return (0);
+	philo->last = malloc(sizeof(struct timeval) * 1);
+	if (!philo->last)
+		return (0);
+	philo->lfork = malloc(sizeof(pthread_mutex_t) * 1);
+	if (!philo->lfork)
+		return (0);
+	philo->rfork = malloc(sizeof(pthread_mutex_t) * 1);
+	if (!philo->rfork)
+		return (0);
+	philo->die = malloc(sizeof(int) * 1);
+	if (!philo->die)
+		return (0);
+	philo->full = malloc(sizeof(int) * 1);
+	if (!philo->full)
 		return (0);
 	return (1);
 }
@@ -44,24 +70,16 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 	philo->num_of_meals = 0;
 	if (ac == 6)
 		philo->num_of_meals = ft_atoi(av[5]);
-	philo->philo = malloc(sizeof(pthread_t) * (philo->num_of_phil));
-	philo->timer = malloc(sizeof(struct timeval) * 1);
-	philo->start = malloc(sizeof(struct timeval) * 1);
-	philo->last = malloc(sizeof(struct timeval) * 1);
-	philo->lfork = malloc(sizeof(pthread_mutex_t) * 1);
+	if (!malloc_philo(philo))
+		return (0);
 	(philo)->lfork = &(philo)->input->forks[philo->num - 1];
-	philo->rfork = malloc(sizeof(pthread_mutex_t) * 1);
 	if (philo->num == philo->num_of_phil)
 		(philo)->rfork = &(philo)->input->forks[0];
 	else
 		(philo)->rfork = &(philo)->input->forks[philo->num];
-	philo->die = malloc(sizeof(int) * 1);
 	*(philo)->die = 0;
-	philo->full = malloc(sizeof(int) * 1);
 	*(philo)->full = 0;
-	if (!philo->philo || !philo->timer || !philo->die || !philo->full
-		|| !philo->lfork || !philo->rfork || !philo->start)
-		return (0);
+	now(philo->last);
 	return (1);
 }
 	
@@ -70,9 +88,6 @@ int	setup_philos(t_input *input, int ac, char *av[])
 	int	i;
 	
 	i = -1;
-	input->philos = malloc(sizeof(t_philo) * (input->num_of_phil));
-	if (!input->philos)
-		return (0);
 	while (++i < input->num_of_phil)
 	{
 		input->philos[i].input = input;
@@ -85,7 +100,7 @@ int	setup_philos(t_input *input, int ac, char *av[])
 			return (0);
 		}
 	}
-	if (pthread_create(input->death->thread, NULL, &droutine, &(input))
+	if (pthread_create((input)->death->thread, NULL, &droutine, input))
 	{
 		free(input);
 		printf("Failed to create thread\n");
@@ -93,6 +108,7 @@ int	setup_philos(t_input *input, int ac, char *av[])
 	}
 	while (--i >= 0)
 		pthread_join(*(input->philos[i].philo), NULL);
+	pthread_join(*(input)->death->thread, NULL);
 	return (1);
 }
 
@@ -105,6 +121,17 @@ int	setup_input(int ac, char *av[], t_input *input)
 	input->num_of_meals = 0;
 	if (ac == 6)
 		input->num_of_meals = ft_atoi(av[5]);
+	input->philos = malloc(sizeof(t_philo) * (input->num_of_phil));
+	if (!input->philos)
+		return (0);
+	input->death = malloc(sizeof(t_death) * 1);
+	if (!input->death)
+		return (0);
+	input->death->thread = malloc(sizeof(pthread_t) * 1);
+	if (!input->death->thread)
+		return (0);
+	input->death->ate = malloc(sizeof(int) * 1);
+	*(input)->death->ate = false;
 	return (1);
 }
 

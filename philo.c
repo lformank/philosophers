@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:14:25 by lformank          #+#    #+#             */
-/*   Updated: 2025/04/26 13:54:28 by lformank         ###   ########.fr       */
+/*   Updated: 2025/04/27 10:56:12 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,10 @@ void	free_input(t_input *input)
 
 int	main(int ac, char **av)
 {
-	t_input		input;
+	t_input	input;
 
 	if (!init(ac, av))
-	{
-		free_input(&input);
 		return (0);
-	}
 	if (!setup_input(ac, av, &input))
 	{
 		free_input(&input);
