@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/04/27 14:56:18 by lformank         ###   ########.fr       */
+/*   Updated: 2025/04/30 16:42:18 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,9 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 {
 	philo->num = i + 1;
 	philo->num_of_phil = ft_atoi(av[1]);
-	philo->time_to_die = ft_atoi(av[2]);	// 10
-	philo->time_to_eat = ft_atoi(av[3]);	// 5
-	philo->time_to_sleep = ft_atoi(av[4]);	// 3
+	philo->time_to_die = ft_atoi(av[2]);
+	philo->time_to_eat = ft_atoi(av[3]);
+	philo->time_to_sleep = ft_atoi(av[4]);
 	philo->num_of_meals = 0;
 	if (ac == 6)
 		philo->num_of_meals = ft_atoi(av[5]);
@@ -79,6 +79,10 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 		(philo)->rfork = &(philo)->input->forks[philo->num];
 	*(philo)->die = 0;
 	*(philo)->full = 0;
+	philo->set = malloc(sizeof(int) * 1);
+	if (!philo->set)
+		return (0);
+	philo->ready = false;
 	now(philo->last);
 	return (1);
 }
@@ -99,6 +103,7 @@ int	setup_philos(t_input *input, int ac, char *av[])
 			printf("Failed to create thread\n");
 			return (0);
 		}
+		input->philos[i].ready = true;
 	}
 	if (pthread_create((input)->death->thread, NULL, &droutine, input))
 	{
@@ -131,7 +136,13 @@ int	setup_input(int ac, char *av[], t_input *input)
 	if (!input->death->thread)
 		return (0);
 	input->death->ate = malloc(sizeof(int) * 1);
+	if (!input->death->ate)
+		return (0);
 	*(input)->death->ate = false;
+	input->death->ready = malloc(sizeof(int) * 1);
+	if (!input->death->ready)
+		return (0);
+	*(input)->death->ready = false;
 	return (1);
 }
 
