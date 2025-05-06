@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/04/30 16:42:18 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/04 10:40:06 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,14 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 		(philo)->rfork = &(philo)->input->forks[0];
 	else
 		(philo)->rfork = &(philo)->input->forks[philo->num];
-	*(philo)->die = 0;
-	*(philo)->full = 0;
+	*(philo)->die = false;
+	*(philo)->full = false;
 	philo->set = malloc(sizeof(int) * 1);
 	if (!philo->set)
 		return (0);
-	philo->ready = false;
+	*(philo)->set = false;
+	philo->ready = 0;
+	now(philo->start);
 	now(philo->last);
 	return (1);
 }
@@ -95,8 +97,13 @@ int	setup_philos(t_input *input, int ac, char *av[])
 	while (++i < input->num_of_phil)
 	{
 		input->philos[i].input = input;
-		if (!setup_philo(&(input)->philos[i], i, ac, av)
-			|| pthread_create((input->philos[i].philo), NULL,
+		if (!setup_philo(&(input)->philos[i], i, ac, av))
+		{
+			free(input);
+			printf("Failed to create thread\n");
+			return (0);
+		}
+		if (pthread_create((input->philos[i].philo), NULL,
 			&routine, &(input->philos[i])))
 		{
 			free(input);
