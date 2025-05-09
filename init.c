@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/08 15:09:12 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/09 15:53:32 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,8 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 	*(philo)->die = false;
 	*(philo)->full = false;
 	pthread_mutex_init(philo->to_write, NULL);
-	now(philo->start);
-	now(philo->last);
+	now(philo->to_write, philo->start);
+	now(philo->to_write, philo->last);
 	return (1);
 }
 	
@@ -145,6 +145,10 @@ int	setup_input(int ac, char *av[], t_input *input)
 	if (!input->death->ate)
 		return (0);
 	*(input)->death->ate = false;
+	input->death->lock = malloc(sizeof(pthread_mutex_t) * 1);
+	if (!input->death->lock)
+		return (0);
+	pthread_mutex_init(input->death->lock, NULL);
 	return (1);
 }
 

@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/08 15:04:41 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/09 16:50:01 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ typedef struct s_philo
 	int				time_to_sleep;
 	int				num_of_meals;
 	int				num;
-	bool			*full;
+	int				*full;
 	t_input			*input;
 	pthread_t		*philo;
 	pthread_mutex_t	*to_write;
@@ -59,10 +59,11 @@ typedef struct s_philo
 
 typedef struct s_death
 {
-	t_philo		*philo;
-	t_input		*input;
-	pthread_t	*thread;
-	bool		*ate;
+	t_philo			*philo;
+	t_input			*input;
+	pthread_t		*thread;
+	bool			*ate;
+	pthread_mutex_t	*lock;
 }	t_death;
 
 /* INICIALIZE */
@@ -73,12 +74,13 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[]);
 int	setup_forks(t_input *input);
 
 /* UTILS */
-int		ft_atoi(const char *nptr);
-int		ft_strlen(const char *s);
-void	now(struct timeval	*t);
-void	free_input(t_input *input);
-void	set_bool(pthread_mutex_t *lock, bool *variable, bool value);
-bool	get_bool(pthread_mutex_t *lock, bool *variable);
+int			ft_atoi(const char *nptr);
+int			ft_strlen(const char *s);
+long int	now(pthread_mutex_t *lock, struct timeval	*t);
+void		free_input(t_input *input);
+void		set_bool(pthread_mutex_t *lock, bool *variable, bool value);
+bool		get_bool(pthread_mutex_t *lock, bool *variable);
+long int	get_long(pthread_mutex_t *lock, long int *variable);
 
 /* CONDITIONS */
 void	wrong_input(void);
