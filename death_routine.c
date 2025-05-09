@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/09 15:59:48 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/09 17:38:48 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ int	check_death(t_input *input, int *i)
 	long int		time_since_meal;
 
 	now(input->death->lock, &t);
-	time_since_meal = t.tv_sec - now(input->death->lock, input->philos[*i].last);
+	time_since_meal = t.tv_sec - get_long(input->death->lock, &input->philos[*i].last->tv_sec);
+	// printf("since meal: %ld\n", time_since_meal);
 	if (time_since_meal >= input->philos[*i].time_to_die )
 	{
 		*(input)->philos[*i].die = true;
@@ -61,13 +62,14 @@ void	*droutine(void *table)
 	input = *(t_input *)table;
 	while (!get_bool(input.death->lock, input.philos[++i].die))
 	{
-		while (i < input.num_of_phil && !get_bool(input.death->lock, input.philos[i].die))
+		while (i < input.num_of_phil || !get_bool(input.death->lock, input.philos[i].die))
 		{
+			printf("HERE %d\n", get_bool(input.death->lock, input.philos[i].die));
 			if (check_death(&input, &i) == 1)
 			{
-				kill_philos(&input);
 				now(input.death->lock, &t);
 				printf("%ld %d died\n", t.tv_sec - input.philos[i].start->tv_sec, input.philos[i].num);
+				kill_philos(&input);
 				return (0);
 			}
 			// if (input.num_of_meals && check_meals(&input, &i) == 1)

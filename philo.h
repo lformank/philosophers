@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/09 16:50:01 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/09 17:15:57 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ typedef struct s_philo
 	int				time_to_sleep;
 	int				num_of_meals;
 	int				num;
-	int				*full;
+	long int		*full;
 	t_input			*input;
 	pthread_t		*philo;
 	pthread_mutex_t	*to_write;
@@ -81,6 +81,8 @@ void		free_input(t_input *input);
 void		set_bool(pthread_mutex_t *lock, bool *variable, bool value);
 bool		get_bool(pthread_mutex_t *lock, bool *variable);
 long int	get_long(pthread_mutex_t *lock, long int *variable);
+void	set_long(pthread_mutex_t *lock, long int *variable, long int value);
+
 
 /* CONDITIONS */
 void	wrong_input(void);

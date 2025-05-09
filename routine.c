@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/09 16:50:41 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/09 17:23:34 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,25 +47,12 @@ void	get_fork(t_philo *philo)
 {
 	struct timeval	t;
 
-	// if (philo->num % 2 == 0)
-	// {
 		now(philo->to_write, &t);
 		pthread_mutex_lock(philo->lfork);
 		printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
 		now(philo->to_write, &t);
 		pthread_mutex_lock(philo->rfork);
 		printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
-		
-	// }
-	// else
-	// {
-	// 	now(philo->to_write, &t);
-	// 	pthread_mutex_lock(philo->rfork);
-	// 	printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
-	// 	now(philo->to_write, &t);
-	// 	pthread_mutex_lock(philo->lfork);
-	// 	printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
-	// }
 }
 
 void	eating(t_philo *philo)
@@ -84,13 +71,13 @@ void	eating(t_philo *philo)
 				break ;
 			now(philo->to_write, &t);
 		}
+		pthread_mutex_unlock(philo->lfork);
+		pthread_mutex_unlock(philo->rfork);
 		now(philo->to_write, philo->last);
 	}
-	pthread_mutex_unlock(philo->lfork);
-	pthread_mutex_unlock(philo->rfork);
 	if (*(philo)->die == true)
 		return ;
-	set)*(philo)->full += 1;
+	set_long(philo->to_write, philo->full, *(philo)->full + 1);
 }
 
 void	sleeping(t_philo *philo)
@@ -129,8 +116,7 @@ void	*routine(void *philos)
 		sleeping(&philo);
 		if (*(philo).die == 1)
 			return(philos);
-		if (i != 0 && i == philo.num_of_meals)
-			set_bool(philo.to_write, philo.full, true);
+		// if (i != 0 && i == philo.num_of_meals)
 	}
 	return (philos);
 }

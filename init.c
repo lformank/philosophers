@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/09 15:53:32 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/09 17:35:28 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int	malloc_philo(t_philo *philo)
 	philo->die = malloc(sizeof(int) * 1);
 	if (!philo->die)
 		return (0);
-	philo->full = malloc(sizeof(int) * 1);
+	philo->full = malloc(sizeof(long int) * 1);
 	if (!philo->full)
 		return (0);
 	philo->to_write = malloc(sizeof(pthread_mutex_t) * 1);
@@ -81,7 +81,7 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 	else
 		(philo)->lfork = &(philo)->input->forks[philo->num];
 	*(philo)->die = false;
-	*(philo)->full = false;
+	*(philo)->full = 0;
 	pthread_mutex_init(philo->to_write, NULL);
 	now(philo->to_write, philo->start);
 	now(philo->to_write, philo->last);
@@ -106,14 +106,14 @@ int	setup_philos(t_input *input, int ac, char *av[])
 		}
 	}
 	set_bool(&input->read, &input->ready, true);
-	while (--i >= 0)
-		pthread_join(*(input->philos[i].philo), NULL);
-	if (pthread_create((input)->death->thread, NULL, &droutine, input))
+	if (pthread_create(input->death->thread, NULL, &droutine, input))
 	{
 		free(input);
 		printf("Failed to create thread\n");
 		return (0);
 	}
+	while (--i >= 0)
+		pthread_join(*(input->philos[i].philo), NULL);
 	pthread_join(*(input)->death->thread, NULL);
 	return (1);
 }
