@@ -6,11 +6,28 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 11:12:14 by lformank          #+#    #+#             */
-/*   Updated: 2025/04/06 12:40:26 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/08 13:27:17 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+bool	get_bool(pthread_mutex_t *lock, bool *variable)
+{
+	bool	value;
+
+	pthread_mutex_lock(lock);
+	value = *variable;
+	pthread_mutex_unlock(lock);
+	return (value);
+}
+
+void	set_bool(pthread_mutex_t *lock, bool *variable, bool value)
+{
+	pthread_mutex_lock(lock);
+	*variable = value;
+	pthread_mutex_unlock(lock);
+}
 
 int	ft_strlen(const char *s)
 {
@@ -36,7 +53,7 @@ int	ft_atoi(const char *nptr)
 	while (nptr[++i])
 	{
 		if (nptr[i] == '-')
-			minus = -1;
+			return (0);
 		if (nptr[i] != '\0' && nptr[i] >= '0' && nptr[i] <= '9')
 		{
 			n = (n * 10) + (nptr[i] - 48);

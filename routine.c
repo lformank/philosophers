@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/04 13:46:04 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/08 15:03:56 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,9 @@ void	thinking(t_philo *philo)
 
 	get_time(philo, &t);
 	printf("%ld %d is thinking\n", t.tv_sec - philo->start->tv_sec, philo->num);
-	while(t.tv_sec - philo->timer->tv_sec < 20 && philo->lfork->__data.__lock && philo->rfork->__data.__lock)
+	while(philo->lfork->__data.__lock && philo->rfork->__data.__lock)
 	{
-		if (*(philo)->die == 1)
+		if (*(philo)->die == true)
 			return ;
 	}
 }
@@ -45,18 +45,18 @@ void	get_fork(t_philo *philo)
 	if (philo->num % 2 == 1)
 	{
 		now(&t);
-		pthread_mutex_lock(philo->rfork);
-		printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
 		pthread_mutex_lock(philo->lfork);
+		printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
+		pthread_mutex_lock(philo->rfork);
 		printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
 		
 	}
 	if (philo->num % 2 == 0)
 	{
 		now(&t);
-		pthread_mutex_lock(philo->lfork);
-		printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
 		pthread_mutex_lock(philo->rfork);
+		printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
+		pthread_mutex_lock(philo->lfork);
 		printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
 	}
 }
@@ -73,7 +73,7 @@ void	eating(t_philo *philo)
 		printf("%ld %d is eating\n", t.tv_sec - philo->start->tv_sec, philo->num);
 		while (t.tv_sec - philo->timer->tv_sec <= philo->time_to_eat)
 		{
-			if (*(philo)->die == 1)
+			if (*(philo)->die == true)
 				break ;
 			now(&t);
 		}
@@ -107,12 +107,12 @@ void	*routine(void *philos)
 
 	i = 0;
 	philo = *(t_philo *)philos;
-	while (*(philo).set == false)
+	while (!get_bool(&philo.input->read, &philo.input->ready))
 		;
 	now(philo.start);
 	if (philo.num == philo.num_of_phil)
 		sleeping(&philo);
-	while (*(philo).die == 0)
+	while (*(philo).die == false || *(philo).full == false)
 	{
 		if (i != 0 && i == philo.num_of_meals)
 			*(philo).full = true;

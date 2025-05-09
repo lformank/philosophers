@@ -6,44 +6,11 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/04 13:31:34 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/08 11:38:36 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	set_ready(t_input *input)
-{
-	int	i;
-
-	i = -1;
-	while (++i < input->num_of_phil)
-		*(input)->philos[i].set = true;
-}
-
-void	check_ready(t_input *input)
-{
-	int	i;
-
-	i = 0;
-	while (!*(input)->death->ready)
-	{
-		while (i < input->num_of_phil - 1)
-		{
-			if (input->philos[i].ready)
-				*(input)->death->ready += 1;
-			i++;
-		}
-		i = 0;
-		if (*(input)->death->ready == input->num_of_phil - 1)
-		{
-			set_ready(input);
-			break;
-		}
-		else
-			*(input)->death->ready = 0;
-	}
-}
 
 void	kill_philos(t_input *input)
 {
@@ -91,10 +58,9 @@ void	*droutine(void *table)
 
 	i = -1;
 	input = *(t_input *)table;
-	check_ready(&input);
 	while (*(input).philos[++i].die == false)
 	{
-		while (i < input.num_of_phil)
+		while (i < input.num_of_phil && *(input).philos[i].die == false)
 		{
 			if (check_death(&input, &i) == 1)
 			{

@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/04/30 16:25:53 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/08 15:04:41 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,14 @@ typedef struct s_input
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				num_of_meals;
+	bool			ready;
+	pthread_mutex_t	read;
 	pthread_mutex_t	*forks;
 	struct s_philo	*philos;
 	struct s_death	*death;
 }	t_input;
+
+
 
 typedef struct s_philo
 {
@@ -41,13 +45,12 @@ typedef struct s_philo
 	int				time_to_sleep;
 	int				num_of_meals;
 	int				num;
-	int				*full;
+	bool			*full;
 	t_input			*input;
 	pthread_t		*philo;
+	pthread_mutex_t	*to_write;
 	pthread_mutex_t	*lfork;
 	pthread_mutex_t	*rfork;
-	bool			ready;
-	bool			*set;
 	bool			*die;
 	struct timeval	*start;
 	struct timeval	*timer;
@@ -60,7 +63,6 @@ typedef struct s_death
 	t_input		*input;
 	pthread_t	*thread;
 	bool		*ate;
-	int			*ready;
 }	t_death;
 
 /* INICIALIZE */
@@ -75,6 +77,8 @@ int		ft_atoi(const char *nptr);
 int		ft_strlen(const char *s);
 void	now(struct timeval	*t);
 void	free_input(t_input *input);
+void	set_bool(pthread_mutex_t *lock, bool *variable, bool value);
+bool	get_bool(pthread_mutex_t *lock, bool *variable);
 
 /* CONDITIONS */
 void	wrong_input(void);
