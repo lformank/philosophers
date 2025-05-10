@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/09 17:38:48 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/10 17:56:23 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,36 +18,35 @@ void	kill_philos(t_input *input)
 
 	i = -1;
 	while (++i < input->num_of_phil)
-	{
 		set_bool(input->death->lock, input->philos[i].die, true);
-		// *(input)->philos[i].die = true;
-		// free_input(input);
-	}
+	free_input(input);
 }
 
 int	check_death(t_input *input, int *i)
 {
 	struct timeval t;
-	long int		time_since_meal;
 
-	now(input->death->lock, &t);
-	time_since_meal = t.tv_sec - get_long(input->death->lock, &input->philos[*i].last->tv_sec);
-	// printf("since meal: %ld\n", time_since_meal);
-	if (time_since_meal >= input->philos[*i].time_to_die )
+	if (now(input->death->lock, &t) -
+		get_long(input->death->lock, &input->philos[*i].last->tv_sec) >=
+		input->time_to_die )
 	{
-		*(input)->philos[*i].die = true;
+		set_bool(input->death->lock, input->philos[*i].die, true);
 		return (1);
 	}
 	return (0);
 }
 
-int	check_meals(t_input *input, int *i)
+int	check_meals(t_input *input)
 {
-	if (*(input)->philos[*i].full == input->num_of_meals)
+	int	i;
+	int	count;
+
+	i = -1;
+	count = 0;
+	while (++i < input->num_of_phil)
 	{
-		set_bool(input->death->lock, input->philos[*i].die, true);
-		// kill_philos(input);
-		return (1);
+		if (get_bool(&input->read, input->philos[i]-> ) == true)
+			count++;
 	}
 	return (0);
 }
@@ -56,27 +55,26 @@ void	*droutine(void *table)
 {
 	t_input			input;
 	int				i;
-	struct timeval	t;
 
 	i = -1;
 	input = *(t_input *)table;
 	while (!get_bool(input.death->lock, input.philos[++i].die))
 	{
-		while (i < input.num_of_phil || !get_bool(input.death->lock, input.philos[i].die))
+		while (i < input.num_of_phil && !get_bool(input.death->lock,
+			input.philos[i].die))
 		{
-			printf("HERE %d\n", get_bool(input.death->lock, input.philos[i].die));
 			if (check_death(&input, &i) == 1)
 			{
-				now(input.death->lock, &t);
-				printf("%ld %d died\n", t.tv_sec - input.philos[i].start->tv_sec, input.philos[i].num);
+				print_action(&input.read, &input.philos[i],
+					input.philos[i].start->tv_sec, DIE);
 				kill_philos(&input);
 				return (0);
 			}
-			// if (input.num_of_meals && check_meals(&input, &i) == 1)
-			// {
-			// 	kill_philos(&input);
-			// 	return (0);
-			// }
+			if (input.num_of_meals && check_meals(&input) == 1)
+			{
+				kill_philos(&input);
+				return (0);
+			}
 			i++;
 		}
 		i = -1;

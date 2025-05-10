@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:14:25 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/08 13:26:28 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/10 16:39:50 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	free_input(t_input *input)
 	i = -1;
 	while (++i < input->num_of_phil)
 		pthread_mutex_destroy(&(input->forks[i]));
-	free(input->forks);
+	// free(input->forks);
 	i = -1;
 	while (++i < input->num_of_phil)
 	{

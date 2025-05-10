@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/09 17:23:34 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/10 17:55:04 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,7 @@ void	get_time(t_philo *philo, struct timeval	*t)
 
 void	thinking(t_philo *philo)
 {
-	struct timeval	t;
-
-	get_time(philo, &t);
-	printf("%ld %d is thinking\n", t.tv_sec - philo->start->tv_sec, philo->num);
+	print_action(philo->to_write, philo, philo->start->tv_sec, THINKING);
 	while(philo->lfork->__data.__lock && philo->rfork->__data.__lock)
 	{
 		if (*(philo)->die == true)
@@ -45,14 +42,10 @@ void	thinking(t_philo *philo)
 
 void	get_fork(t_philo *philo)
 {
-	struct timeval	t;
-
-		now(philo->to_write, &t);
-		pthread_mutex_lock(philo->lfork);
-		printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
-		now(philo->to_write, &t);
-		pthread_mutex_lock(philo->rfork);
-		printf("%ld %d has taken a fork\n", t.tv_sec - philo->start->tv_sec, philo->num);
+	pthread_mutex_lock(philo->lfork);
+	print_action(philo->to_write, philo, philo->start->tv_sec, FORKING);
+	pthread_mutex_lock(philo->rfork);
+	print_action(philo->to_write, philo, philo->start->tv_sec, FORKING);	
 }
 
 void	eating(t_philo *philo)
@@ -64,7 +57,7 @@ void	eating(t_philo *philo)
 	if (philo->lfork->__data.__lock && philo->rfork->__data.__lock)
 	{
 		now(philo->to_write, philo->last);
-		printf("%ld %d is eating\n", t.tv_sec - philo->start->tv_sec, philo->num);
+		print_action(philo->to_write, philo, philo->start->tv_sec, EATING);
 		while (t.tv_sec - philo->timer->tv_sec <= philo->time_to_eat)
 		{
 			if (*(philo)->die == true)
@@ -77,7 +70,6 @@ void	eating(t_philo *philo)
 	}
 	if (*(philo)->die == true)
 		return ;
-	set_long(philo->to_write, philo->full, *(philo)->full + 1);
 }
 
 void	sleeping(t_philo *philo)
@@ -85,7 +77,7 @@ void	sleeping(t_philo *philo)
 	struct timeval	t;
 
 	get_time(philo, &t);
-	printf("%ld %d is sleeping\n", t.tv_sec - philo->start->tv_sec, philo->num);
+	print_action(philo->to_write, philo, philo->start->tv_sec, SLEEPING);
 	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_sleep)
 	{
 		if (*(philo)->die == 1)
@@ -104,19 +96,16 @@ void	*routine(void *philos)
 	while (!get_bool(&philo.input->read, &philo.input->ready))
 		;
 	now(philo.to_write, philo.start);
-	while (!get_bool(philo.to_write, philo.die) /*&& !get_bool(philo.to_write, philo.full)*/)
-	{
-		i++;
-		thinking(&philo);
-		if (*(philo).die == 1)
-			return(philos);
-		eating(&philo);
-		if (*(philo).die == 1)
-			return(philos);
+	if (philo.num == 5)
 		sleeping(&philo);
-		if (*(philo).die == 1)
-			return(philos);
-		// if (i != 0 && i == philo.num_of_meals)
+	while (!get_bool(philo.to_write, philo.die))
+	{
+		thinking(&philo);
+		eating(&philo);
+		sleeping(&philo);
+		if (i != 0 && i == philo.num_of_meals)
+			set_bool(&philo.input->read, philo.full, true);
+		i++;
 	}
 	return (philos);
 }
