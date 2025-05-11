@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/10 17:56:23 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/11 21:23:23 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ void	kill_philos(t_input *input)
 	i = -1;
 	while (++i < input->num_of_phil)
 		set_bool(input->death->lock, input->philos[i].die, true);
-	free_input(input);
 }
 
 int	check_death(t_input *input, int *i)
@@ -45,8 +44,11 @@ int	check_meals(t_input *input)
 	count = 0;
 	while (++i < input->num_of_phil)
 	{
-		if (get_bool(&input->read, input->philos[i]-> ) == true)
+		
+		if (get_bool(&input->read, input->philos[i].full) == true)
 			count++;
+		if (input->num_of_meals && count == input->num_of_meals - 1)
+			return (1);
 	}
 	return (0);
 }
@@ -71,10 +73,7 @@ void	*droutine(void *table)
 				return (0);
 			}
 			if (input.num_of_meals && check_meals(&input) == 1)
-			{
 				kill_philos(&input);
-				return (0);
-			}
 			i++;
 		}
 		i = -1;

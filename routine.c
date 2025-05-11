@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/10 17:55:04 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/11 21:37:36 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,9 @@ void	get_time(t_philo *philo, struct timeval	*t)
 void	thinking(t_philo *philo)
 {
 	print_action(philo->to_write, philo, philo->start->tv_sec, THINKING);
-	while(philo->lfork->__data.__lock && philo->rfork->__data.__lock)
+	while (philo->lfork->__data.__lock && philo->rfork->__data.__lock)
 	{
-		if (*(philo)->die == true)
+		if (get_bool(philo->to_write, philo->die))
 			return ;
 	}
 }
@@ -60,7 +60,7 @@ void	eating(t_philo *philo)
 		print_action(philo->to_write, philo, philo->start->tv_sec, EATING);
 		while (t.tv_sec - philo->timer->tv_sec <= philo->time_to_eat)
 		{
-			if (*(philo)->die == true)
+			if (get_bool(philo->to_write, philo->die))
 				break ;
 			now(philo->to_write, &t);
 		}
@@ -78,9 +78,10 @@ void	sleeping(t_philo *philo)
 
 	get_time(philo, &t);
 	print_action(philo->to_write, philo, philo->start->tv_sec, SLEEPING);
-	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_sleep)
+	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_sleep
+		&& !get_bool(philo->to_write, philo->die))
 	{
-		if (*(philo)->die == 1)
+		if (get_bool(philo->to_write, philo->die))
 			return ;
 		now(philo->to_write, &t);
 	}
@@ -91,21 +92,26 @@ void	*routine(void *philos)
 	t_philo			philo;
 	int	i;
 
-	i = 0;
+	i = -1;
 	philo = *(t_philo *)philos;
 	while (!get_bool(&philo.input->read, &philo.input->ready))
 		;
 	now(philo.to_write, philo.start);
-	if (philo.num == 5)
+	if (philo.num == philo.num_of_phil)
 		sleeping(&philo);
 	while (!get_bool(philo.to_write, philo.die))
 	{
 		thinking(&philo);
+		if (get_bool(philo.to_write, philo.die))
+			return (philos);
 		eating(&philo);
+		if (get_bool(philo.to_write, philo.die))
+			return (philos);
 		sleeping(&philo);
-		if (i != 0 && i == philo.num_of_meals)
+		if (get_bool(philo.to_write, philo.die))
+			return (philos);
+		if (++i != 0 && i == philo.num_of_meals - 1)
 			set_bool(&philo.input->read, philo.full, true);
-		i++;
 	}
 	return (philos);
 }
