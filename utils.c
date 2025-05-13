@@ -6,14 +6,14 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 11:12:14 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/10 16:12:07 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/13 17:16:45 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 void	print_action(pthread_mutex_t *lock, t_philo *philo, long int time,
-	enum mode to_print)
+	enum e_mode to_print)
 {
 	struct timeval	t;
 

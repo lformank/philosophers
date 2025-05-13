@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/11 21:23:23 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/13 17:08:43 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,10 @@ void	kill_philos(t_input *input)
 
 int	check_death(t_input *input, int *i)
 {
-	struct timeval t;
+	struct timeval	t;
 
-	if (now(input->death->lock, &t) -
-		get_long(input->death->lock, &input->philos[*i].last->tv_sec) >=
-		input->time_to_die )
+	if (now(input->death->lock, &t) - get_long(input->death->lock,
+		&input->philos[*i].last->tv_sec) >= input->time_to_die)
 	{
 		set_bool(input->death->lock, input->philos[*i].die, true);
 		return (1);
@@ -44,7 +43,6 @@ int	check_meals(t_input *input)
 	count = 0;
 	while (++i < input->num_of_phil)
 	{
-		
 		if (get_bool(&input->read, input->philos[i].full) == true)
 			count++;
 		if (input->num_of_meals && count == input->num_of_meals - 1)

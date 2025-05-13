@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/11 21:37:36 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/13 17:16:19 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,12 @@ long int	now(pthread_mutex_t *lock, struct timeval *t)
 	return (t->tv_sec);
 }
 
-void	get_time(t_philo *philo, struct timeval	*t)
+void	get_time(t_philo *philo, struct timeval *t)
 {
 	pthread_mutex_lock(philo->to_write);
 	gettimeofday(philo->timer, NULL);
-	philo->timer->tv_sec = philo->timer->tv_sec * 1000 + philo->timer->tv_usec / 1000;
+	philo->timer->tv_sec = philo->timer->tv_sec * 1000 + philo->timer->tv_usec
+		/ 1000;
 	pthread_mutex_unlock(philo->to_write);
 	now(philo->to_write, t);
 }
@@ -45,7 +46,7 @@ void	get_fork(t_philo *philo)
 	pthread_mutex_lock(philo->lfork);
 	print_action(philo->to_write, philo, philo->start->tv_sec, FORKING);
 	pthread_mutex_lock(philo->rfork);
-	print_action(philo->to_write, philo, philo->start->tv_sec, FORKING);	
+	print_action(philo->to_write, philo, philo->start->tv_sec, FORKING);
 }
 
 void	eating(t_philo *philo)
@@ -89,8 +90,8 @@ void	sleeping(t_philo *philo)
 
 void	*routine(void *philos)
 {
-	t_philo			philo;
-	int	i;
+	t_philo	philo;
+	int		i;
 
 	i = -1;
 	philo = *(t_philo *)philos;
@@ -113,5 +114,6 @@ void	*routine(void *philos)
 		if (++i != 0 && i == philo.num_of_meals - 1)
 			set_bool(&philo.input->read, philo.full, true);
 	}
+	// clean();
 	return (philos);
 }

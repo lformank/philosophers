@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/10 16:42:08 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/13 17:06:37 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	malloc_philo(t_philo *philo)
 		return (0);
 	philo->to_write = malloc(sizeof(pthread_mutex_t) * 1);
 	if (!philo->to_write)
-		return (0);	
+		return (0);
 	return (1);
 }
 
@@ -87,18 +87,18 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 	now(philo->to_write, philo->last);
 	return (1);
 }
-	
+
 int	setup_philos(t_input *input, int ac, char *av[])
 {
 	int	i;
-	
+
 	i = -1;
 	while (++i < input->num_of_phil)
 	{
 		input->philos[i].input = input;
-		if (!setup_philo(&(input)->philos[i], i, ac, av) || 
-				pthread_create((input->philos[i].philo), NULL,
-				&routine, &	input->philos[i]))
+		if (!setup_philo(&(input)->philos[i], i, ac, av)
+			|| pthread_create((input->philos[i].philo), NULL,
+				&routine, &input->philos[i]))
 		{
 			free_input(input);
 			printf("Failed to create thread\n");
