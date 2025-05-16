@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 11:12:14 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/13 17:16:45 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/14 17:54:18 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,19 @@ void	print_action(pthread_mutex_t *lock, t_philo *philo, long int time,
 
 	now(lock, &t);
 	pthread_mutex_lock(lock);
-	if (to_print == 0)
-		printf("%ld %d has taken a fork\n", t.tv_sec - time, philo->num);
+	if (to_print == 4 && get_bool(&(philo)->to_write, philo->die) == true)
+	{
+		printf("%ld %d died\n", t.tv_sec - time, philo->num);
+		return ;
+	}
 	else if (to_print == 1)
 		printf("%ld %d is eating\n", t.tv_sec - time, philo->num);
 	else if (to_print == 2)
 		printf("%ld %d is sleeping\n", t.tv_sec - time, philo->num);
 	else if (to_print == 3)
 		printf("%ld %d is thinking\n", t.tv_sec - time, philo->num);
-	else if (to_print == 4)
-		printf("%ld %d died\n", t.tv_sec - time, philo->num);
+	else if (to_print == 0)
+		printf("%ld %d has taken a fork\n", t.tv_sec - time, philo->num);
 	pthread_mutex_unlock(lock);
 }
 

@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/13 17:13:07 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/14 13:17:43 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ typedef struct s_input
 	int				time_to_sleep;
 	int				num_of_meals;
 	bool			ready;
-	pthread_mutex_t	read;
 	pthread_mutex_t	*forks;
 	struct s_philo	*philos;
 	struct s_death	*death;
@@ -56,7 +55,7 @@ typedef struct s_philo
 	bool			*full;
 	t_input			*input;
 	pthread_t		*philo;
-	pthread_mutex_t	*to_write;
+	pthread_mutex_t	to_write;
 	pthread_mutex_t	*lfork;
 	pthread_mutex_t	*rfork;
 	bool			*die;
@@ -75,7 +74,7 @@ typedef struct s_death
 }	t_death;
 
 /* INICIALIZE */
-int			init(int ac, char *av[]);
+int			init(int ac, char *av[], t_input *input);
 int			setup_input(int ac, char *av[], t_input *input);
 int			setup_philos(t_input *input, int ac, char *av[]);
 int			setup_philo(t_philo *philo, int i, int ac, char *av[]);

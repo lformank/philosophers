@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/13 17:06:37 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/15 22:25:15 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,6 @@ int	malloc_philo(t_philo *philo)
 	philo->full = malloc(sizeof(long int) * 1);
 	if (!philo->full)
 		return (0);
-	philo->to_write = malloc(sizeof(pthread_mutex_t) * 1);
-	if (!philo->to_write)
-		return (0);
 	return (1);
 }
 
@@ -81,11 +78,27 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 	else
 		(philo)->lfork = &(philo)->input->forks[philo->num];
 	*(philo)->die = false;
-	*(philo)->full = 0;
-	pthread_mutex_init(philo->to_write, NULL);
-	now(philo->to_write, philo->start);
-	now(philo->to_write, philo->last);
+	set_bool(&(philo)->to_write, philo->full, false);
+	pthread_mutex_init(&(philo)->to_write, NULL);
+	now(&(philo)->to_write, philo->start);
+	now(&(philo)->to_write, philo->last);
 	return (1);
+}
+
+void	*lone_routine(void *philos)
+{
+	t_philo	philo;
+
+	philo = *(t_philo *)philos;
+	while (!get_bool(&philo.to_write, &philo.input->ready))
+		;
+	now(&(philo).to_write, philo.start);
+	while (!get_bool(&(philo).to_write, philo.die))
+	{
+		usleep(philo.time_to_die);
+		print_action(&(philo).to_write, &philo, philo.time_to_die, DIE);
+	}
+	return (philos);
 }
 
 int	setup_philos(t_input *input, int ac, char *av[])
@@ -93,25 +106,29 @@ int	setup_philos(t_input *input, int ac, char *av[])
 	int	i;
 
 	i = -1;
-	while (++i < input->num_of_phil)
+	if (input->num_of_phil == 1)
 	{
-		input->philos[i].input = input;
-		if (!setup_philo(&(input)->philos[i], i, ac, av)
-			|| pthread_create((input->philos[i].philo), NULL,
-				&routine, &input->philos[i]))
+		input->philos[0].input = input;
+		pthread_create(input->philos[0].philo, NULL, &lone_routine, input->philos);
+	}
+	else
+	{
+		while (++i < input->num_of_phil)
 		{
-			free_input(input);
-			printf("Failed to create thread\n");
-			return (0);
+			input->philos[i].input = input;
+			if (!setup_philo(&(input)->philos[i], i, ac, av)
+				|| pthread_create(input->philos[i].philo, NULL,
+					&routine, &input->philos[i]))
+			{
+				free_input(input);
+				printf("Failed to create thread\n");
+				return (0);
+			}
 		}
 	}
-	set_bool(&input->read, &input->ready, true);
+	set_bool(input->death->lock, &input->ready, true);
 	if (pthread_create(input->death->thread, NULL, &droutine, input))
-	{
-		free(input);
-		printf("Failed to create thread\n");
 		return (0);
-	}
 	while (--i >= 0)
 		pthread_join(*(input->philos[i].philo), NULL);
 	pthread_join(*(input)->death->thread, NULL);
@@ -127,10 +144,6 @@ int	setup_input(int ac, char *av[], t_input *input)
 	input->num_of_meals = 0;
 	if (ac == 6)
 		input->num_of_meals = ft_atoi(av[5]);
-	input->ready = malloc(sizeof(bool) * 1);
-	if (!input->ready)
-		return (0);
-	pthread_mutex_init(&input->read, NULL);
 	input->ready = false;
 	input->philos = malloc(sizeof(t_philo) * (input->num_of_phil));
 	if (!input->philos)
@@ -141,10 +154,7 @@ int	setup_input(int ac, char *av[], t_input *input)
 	input->death->thread = malloc(sizeof(pthread_t) * 1);
 	if (!input->death->thread)
 		return (0);
-	input->death->ate = malloc(sizeof(int) * 1);
-	if (!input->death->ate)
-		return (0);
-	*(input)->death->ate = false;
+	input->death->ate = false;
 	input->death->lock = malloc(sizeof(pthread_mutex_t) * 1);
 	if (!input->death->lock)
 		return (0);
@@ -152,7 +162,7 @@ int	setup_input(int ac, char *av[], t_input *input)
 	return (1);
 }
 
-int	init(int ac, char *av[])
+int	init(int ac, char *av[], t_input *input)
 {
 	if (ac < 5 || ac > 6)
 	{
@@ -167,6 +177,12 @@ int	init(int ac, char *av[])
 	if (!is_it_num(av, ac))
 	{
 		wrong_input();
+		return (0);
+	}
+	input = malloc(1 * sizeof(t_input));
+	if (!input)
+	{
+		printf("Error in mallocking!");
 		return (0);
 	}
 	return (1);

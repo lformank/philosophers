@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/13 17:08:43 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/15 17:03:37 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	check_death(t_input *input, int *i)
 	struct timeval	t;
 
 	if (now(input->death->lock, &t) - get_long(input->death->lock,
-		&input->philos[*i].last->tv_sec) >= input->time_to_die)
+			&input->philos[*i].last->tv_sec) >= input->time_to_die)
 	{
 		set_bool(input->death->lock, input->philos[*i].die, true);
 		return (1);
@@ -43,9 +43,11 @@ int	check_meals(t_input *input)
 	count = 0;
 	while (++i < input->num_of_phil)
 	{
-		if (get_bool(&input->read, input->philos[i].full) == true)
+		if (get_bool(input->death->lock, input->philos[i].full) == true)
+		{
 			count++;
-		if (input->num_of_meals && count == input->num_of_meals - 1)
+		}
+		if (count == input->num_of_phil)
 			return (1);
 	}
 	return (0);
@@ -53,19 +55,19 @@ int	check_meals(t_input *input)
 
 void	*droutine(void *table)
 {
-	t_input			input;
-	int				i;
+	t_input	input;
+	int		i;
 
 	i = -1;
 	input = *(t_input *)table;
 	while (!get_bool(input.death->lock, input.philos[++i].die))
 	{
 		while (i < input.num_of_phil && !get_bool(input.death->lock,
-			input.philos[i].die))
+				input.philos[i].die))
 		{
 			if (check_death(&input, &i) == 1)
 			{
-				print_action(&input.read, &input.philos[i],
+				print_action(input.death->lock, &input.philos[i],
 					input.philos[i].start->tv_sec, DIE);
 				kill_philos(&input);
 				return (0);
@@ -76,5 +78,6 @@ void	*droutine(void *table)
 		}
 		i = -1;
 	}
+	// clean_death();
 	return (table);
 }
