@@ -6,35 +6,16 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:14:25 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/14 13:23:27 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/16 13:53:31 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-// void	clean(t_philo* philo)
-// {
-// }
 
 void	free_input(t_input *input)
 {
-	int	i;
-
-	i = -1;
-	while (++i < input->num_of_phil)
-		pthread_mutex_destroy(&(input->forks[i]));
-	// free(input->forks);
-	i = -1;
-	while (++i < input->num_of_phil)
-	{
-		free(input->philos[i].full);
-		free(input->philos[i].die);
-		free(input->philos[i].timer);
-		free(input->philos[i].philo);
-		free(input->philos[i].start);
-		free(input->philos[i].last);
-	}
-	free((input)->philos);
+	free(input);
 }
 
 int	main(int ac, char **av)
@@ -58,6 +39,7 @@ int	main(int ac, char **av)
 		free_input(&input);
 		return (0);
 	}
+	// setup_threads(&input);
 	free_input(&input);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/14 13:17:43 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/16 13:25:40 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,9 @@
 # include <stdbool.h>
 # include <sys/time.h>
 # include <time.h>
+
+# define RES	"\033[0m"
+# define R		"\033[31m"
 
 enum	e_mode
 {
@@ -38,6 +41,7 @@ typedef struct s_input
 	int				time_to_sleep;
 	int				num_of_meals;
 	bool			ready;
+	pthread_mutex_t	prt;
 	pthread_mutex_t	*forks;
 	struct s_philo	*philos;
 	struct s_death	*death;
@@ -45,20 +49,20 @@ typedef struct s_input
 
 typedef struct s_philo
 {
+	int				num;
 	int				num_of_phil;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				num_of_meals;
-	int				num;
 	enum e_mode		action;
-	bool			*full;
 	t_input			*input;
 	pthread_t		*philo;
-	pthread_mutex_t	to_write;
+	pthread_mutex_t	check;
 	pthread_mutex_t	*lfork;
 	pthread_mutex_t	*rfork;
-	bool			*die;
+	bool			die;
+	bool			full;
 	struct timeval	*start;
 	struct timeval	*timer;
 	struct timeval	*last;
@@ -70,6 +74,7 @@ typedef struct s_death
 	t_input			*input;
 	pthread_t		*thread;
 	bool			*ate;
+	pthread_mutex_t	*death_lock;
 	pthread_mutex_t	*lock;
 }	t_death;
 

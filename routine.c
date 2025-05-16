@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/15 17:30:57 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/16 13:35:05 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,30 +23,38 @@ long int	now(pthread_mutex_t *lock, struct timeval *t)
 
 void	get_time(t_philo *philo, struct timeval *t)
 {
-	pthread_mutex_lock(&(philo)->to_write);
+	pthread_mutex_lock(&(philo)->check);
 	gettimeofday(philo->timer, NULL);
 	philo->timer->tv_sec = philo->timer->tv_sec * 1000 + philo->timer->tv_usec
 		/ 1000;
-	pthread_mutex_unlock(&(philo)->to_write);
-	now(&(philo)->to_write, t);
+	pthread_mutex_unlock(&(philo)->check);
+	now(&(philo)->check, t);
 }
 
 void	thinking(t_philo *philo)
 {
-	print_action(&(philo)->to_write, philo, philo->start->tv_sec, THINKING);
+	print_action(&(philo)->input->prt, philo, philo->start->tv_sec, THINKING);
 	while (philo->lfork->__data.__lock && philo->rfork->__data.__lock)
 	{
-		if (get_bool(&(philo)->to_write, philo->die))
+		if (get_bool(philo->input->death->death_lock, &philo->die))
 			return ;
 	}
 }
 
 void	get_fork(t_philo *philo)
 {
-	pthread_mutex_lock(philo->lfork);
-	print_action(&(philo)->to_write, philo, philo->start->tv_sec, FORKING);
-	pthread_mutex_lock(philo->rfork);
-	print_action(&(philo)->to_write, philo, philo->start->tv_sec, FORKING);
+	if (philo->num_of_phil % 2 == 1)
+	{
+		pthread_mutex_lock(philo->lfork);
+		pthread_mutex_lock(philo->rfork);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->rfork);
+		pthread_mutex_lock(philo->lfork);
+	}
+	print_action(&(philo)->input->prt, philo, philo->start->tv_sec, FORKING);
+	print_action(&(philo)->input->prt, philo, philo->start->tv_sec, FORKING);
 }
 
 void	eating(t_philo *philo)
@@ -55,21 +63,16 @@ void	eating(t_philo *philo)
 
 	get_fork(philo);
 	get_time(philo, &t);
-	now(&(philo)->to_write, philo->last);
-	print_action(&(philo)->to_write, philo, philo->start->tv_sec, EATING);
+	now(&(philo)->check, philo->last);
+	print_action(&(philo)->input->prt, philo, philo->start->tv_sec, EATING);
 	usleep((t.tv_sec - philo->timer->tv_sec) / 2);
 	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_eat
-		&& !get_bool(&(philo)->to_write, philo->die))
-	{
-		if (get_bool(&(philo)->to_write, philo->die))
-			break ;
-		now(&(philo)->to_write, &t);
-	}
+		&& !get_bool(philo->input->death->death_lock, &philo->die))
+		now(&(philo)->check, &t);
 	pthread_mutex_unlock(philo->lfork);
 	pthread_mutex_unlock(philo->rfork);
-	now(&(philo)->to_write, philo->last);
-	if (*(philo)->die == true)
-		return ;
+	now(&(philo)->check, philo->last);
+	
 }
 
 void	sleeping(t_philo *philo)
@@ -77,15 +80,11 @@ void	sleeping(t_philo *philo)
 	struct timeval	t;
 
 	get_time(philo, &t);
-	print_action(&(philo)->to_write, philo, philo->start->tv_sec, SLEEPING);
+	print_action(&(philo)->input->prt, philo, philo->start->tv_sec, SLEEPING);
 	usleep((t.tv_sec - philo->timer->tv_sec) / 2);
 	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_sleep
-		&& !get_bool(&(philo)->to_write, philo->die))
-		{
-			if (get_bool(&(philo)->to_write, philo->die))
-			return ;
-			now(&(philo)->to_write, &t);
-	}
+		&& !get_bool(philo->input->death->death_lock, &philo->die))
+		now(&(philo)->check, &t);
 }
 
 void	*routine(void *philos)
@@ -95,20 +94,23 @@ void	*routine(void *philos)
 
 	i = 0;
 	philo = *(t_philo *)philos;
-	while (!get_bool(&philo.to_write, &philo.input->ready))
+	while (!get_bool(&philo.check, &philo.input->ready))
 		;
-	now(&(philo).to_write, philo.start);
-	while (!get_bool(&(philo).to_write, philo.die))
-	{
+	now(&(philo).check, philo.start);
+	now(&(philo).check, philo.last);
+	if (philo.num % 2 == 1 && i == 0)
 		thinking(&philo);
-		if (get_bool(&(philo).to_write, philo.die))
-			break ;
+	while (!get_bool((philo).input->death->death_lock, &philo.die))
+	{
 		eating(&philo);
 		if (philo.num_of_meals != 0 && ++i == philo.num_of_meals)
-			set_bool(&(philo).to_write, philo.full, true);
-		if (get_bool(&(philo).to_write, philo.die))
+			set_bool(&(philo).check, &philo.full, true);
+		if (get_bool(philo.input->death->death_lock, &philo.die))
 			break ;
 		sleeping(&philo);
+		if (get_bool(philo.input->death->death_lock, &philo.die))
+			break ;
+		thinking(&philo);
 	}
 	return (philos);
 }

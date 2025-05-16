@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/15 22:25:15 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/16 14:05:13 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,12 +51,12 @@ int	malloc_philo(t_philo *philo)
 	philo->rfork = malloc(sizeof(pthread_mutex_t) * 1);
 	if (!philo->rfork)
 		return (0);
-	philo->die = malloc(sizeof(int) * 1);
-	if (!philo->die)
-		return (0);
-	philo->full = malloc(sizeof(long int) * 1);
-	if (!philo->full)
-		return (0);
+	// philo->die = malloc(sizeof(int) * 1);
+	// if (!philo->die)
+	// 	return (0);
+	// philo->full = malloc(sizeof(bool) * 1);
+	// if (!philo->full)
+		// return (0);
 	return (1);
 }
 
@@ -72,16 +72,16 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 		philo->num_of_meals = ft_atoi(av[5]);
 	if (!malloc_philo(philo))
 		return (0);
-	(philo)->rfork = &(philo)->input->forks[philo->num - 1];
+	philo->rfork = &philo->input->forks[philo->num - 1];
 	if (philo->num == philo->num_of_phil)
-		(philo)->lfork = &(philo)->input->forks[0];
+		philo->lfork = &philo->input->forks[0];
 	else
-		(philo)->lfork = &(philo)->input->forks[philo->num];
-	*(philo)->die = false;
-	set_bool(&(philo)->to_write, philo->full, false);
-	pthread_mutex_init(&(philo)->to_write, NULL);
-	now(&(philo)->to_write, philo->start);
-	now(&(philo)->to_write, philo->last);
+		philo->lfork = &philo->input->forks[philo->num];
+	philo->die = false;
+	pthread_mutex_init(&(philo)->check, NULL);
+	set_bool(&(philo)->check, &(philo)->full, false);
+	now(&(philo)->check, philo->start);
+	now(&(philo)->check, philo->last);
 	return (1);
 }
 
@@ -90,13 +90,13 @@ void	*lone_routine(void *philos)
 	t_philo	philo;
 
 	philo = *(t_philo *)philos;
-	while (!get_bool(&philo.to_write, &philo.input->ready))
+	while (!get_bool(&philo.check, &philo.input->ready))
 		;
-	now(&(philo).to_write, philo.start);
-	while (!get_bool(&(philo).to_write, philo.die))
+	now(&(philo).check, philo.start);
+	while (!get_bool(&(philo).check, &philo.die))
 	{
 		usleep(philo.time_to_die);
-		print_action(&(philo).to_write, &philo, philo.time_to_die, DIE);
+		print_action(&philo.input->prt, &philo, philo.time_to_die, DIE);
 	}
 	return (philos);
 }
@@ -130,7 +130,7 @@ int	setup_philos(t_input *input, int ac, char *av[])
 	if (pthread_create(input->death->thread, NULL, &droutine, input))
 		return (0);
 	while (--i >= 0)
-		pthread_join(*(input->philos[i].philo), NULL);
+		pthread_join(*(input)->philos[i].philo, NULL);
 	pthread_join(*(input)->death->thread, NULL);
 	return (1);
 }
@@ -158,7 +158,12 @@ int	setup_input(int ac, char *av[], t_input *input)
 	input->death->lock = malloc(sizeof(pthread_mutex_t) * 1);
 	if (!input->death->lock)
 		return (0);
+	input->death->death_lock = malloc(sizeof(pthread_mutex_t) * 1);
+	if (!input->death->death_lock)
+		return (0);
 	pthread_mutex_init(input->death->lock, NULL);
+	pthread_mutex_init(input->death->death_lock, NULL);
+	pthread_mutex_init(&input->prt, NULL);
 	return (1);
 }
 
@@ -182,7 +187,7 @@ int	init(int ac, char *av[], t_input *input)
 	input = malloc(1 * sizeof(t_input));
 	if (!input)
 	{
-		printf("Error in mallocking!");
+		printf("Error in allocating!");
 		return (0);
 	}
 	return (1);
