@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:14:25 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/16 13:53:31 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/18 16:23:58 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,6 @@ int	main(int ac, char **av)
 		return (0);
 	}
 	// setup_threads(&input);
-	free_input(&input);
+	// free_input(&input);
 	return (0);
 }

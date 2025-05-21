@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/16 13:25:40 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/18 17:07:54 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ typedef struct s_input
 	int				time_to_sleep;
 	int				num_of_meals;
 	bool			ready;
+	bool			simul;
 	pthread_mutex_t	prt;
 	pthread_mutex_t	*forks;
 	struct s_philo	*philos;
@@ -89,6 +90,7 @@ int			setup_forks(t_input *input);
 int			ft_atoi(const char *nptr);
 int			ft_strlen(const char *s);
 long int	now(pthread_mutex_t *lock, struct timeval *t);
+void		get_time(t_philo *philo, struct timeval *t);
 void		free_input(t_input *input);
 void		set_bool(pthread_mutex_t *lock, bool *variable, bool value);
 bool		get_bool(pthread_mutex_t *lock, bool *variable);

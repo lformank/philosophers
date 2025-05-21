@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/16 14:05:13 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/18 17:08:23 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,12 +51,6 @@ int	malloc_philo(t_philo *philo)
 	philo->rfork = malloc(sizeof(pthread_mutex_t) * 1);
 	if (!philo->rfork)
 		return (0);
-	// philo->die = malloc(sizeof(int) * 1);
-	// if (!philo->die)
-	// 	return (0);
-	// philo->full = malloc(sizeof(bool) * 1);
-	// if (!philo->full)
-		// return (0);
 	return (1);
 }
 
@@ -88,16 +82,15 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 void	*lone_routine(void *philos)
 {
 	t_philo	philo;
+	struct timeval	t;
 
 	philo = *(t_philo *)philos;
-	while (!get_bool(&philo.check, &philo.input->ready))
-		;
+	get_time(&philo, &t);
 	now(&(philo).check, philo.start);
-	while (!get_bool(&(philo).check, &philo.die))
-	{
-		usleep(philo.time_to_die);
-		print_action(&philo.input->prt, &philo, philo.time_to_die, DIE);
-	}
+	now(&(philo).check, philo.last);
+	usleep(philo.time_to_die / 2);
+	while (t.tv_sec - philo.timer->tv_sec < philo.time_to_sleep)
+		now(&(philo).check, &t);
 	return (philos);
 }
 
@@ -109,6 +102,7 @@ int	setup_philos(t_input *input, int ac, char *av[])
 	if (input->num_of_phil == 1)
 	{
 		input->philos[0].input = input;
+		setup_philo(&(input)->philos[0], 0, ac, av);
 		pthread_create(input->philos[0].philo, NULL, &lone_routine, input->philos);
 	}
 	else
@@ -145,6 +139,7 @@ int	setup_input(int ac, char *av[], t_input *input)
 	if (ac == 6)
 		input->num_of_meals = ft_atoi(av[5]);
 	input->ready = false;
+	input->simul = false;
 	input->philos = malloc(sizeof(t_philo) * (input->num_of_phil));
 	if (!input->philos)
 		return (0);

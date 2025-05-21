@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 11:12:14 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/16 13:49:57 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/18 16:03:20 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	print_action(pthread_mutex_t *lock, t_philo *philo, long int time,
 	now(&philo->check, &t);
 	if (to_print == 4 /*&& get_bool(&(philo)->check, &philo->die) == true*/)
 	{
-		printf(R"%ld %d died\n"RES, t.tv_sec - time, philo->num);
+		printf("%ld %d died\n", t.tv_sec - time, philo->num);
 		return ;
 	}
 	else if (to_print == 1)
