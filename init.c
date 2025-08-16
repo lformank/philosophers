@@ -6,15 +6,15 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/16 16:00:22 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/16 17:30:59 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	setup_forks(t_input *input)
+long	setup_forks(t_input *input)
 {
-	int	i;
+	long	i;
 
 	i = -1;
 	input->forks = malloc((sizeof(pthread_mutex_t)) * (input->num_of_phil));
@@ -31,7 +31,7 @@ int	setup_forks(t_input *input)
 	return (1);
 }
 
-int	malloc_philo(t_philo *philo)
+long	malloc_philo(t_philo *philo)
 {
 	philo->philo = malloc(sizeof(pthread_t) * (philo->num_of_phil));
 	if (!philo->philo)
@@ -45,15 +45,6 @@ int	malloc_philo(t_philo *philo)
 	philo->last = malloc(sizeof(struct timeval) * 1);
 	if (!philo->last)
 		return (0);
-	philo->lfork = malloc(sizeof(pthread_mutex_t) * 1);
-	if (!philo->lfork)
-		return (0);
-	philo->rfork = malloc(sizeof(pthread_mutex_t) * 1);
-	if (!philo->rfork)
-		return (0);
-	philo->eat = malloc(sizeof(pthread_mutex_t) * 1);
-	if (!philo->eat)
-		return (0);
 	philo->die = malloc(sizeof(bool) * 1);
 	if (!philo->die)
 		return (0);
@@ -63,7 +54,7 @@ int	malloc_philo(t_philo *philo)
 	return (1);
 }
 
-int	setup_philo(t_philo *philo, int i, int ac, char *av[])
+long	setup_philo(t_philo *philo, long i, long ac, char *av[])
 {
 	philo->num = i + 1;
 	philo->num_of_phil = ft_atoi(av[1]);
@@ -75,17 +66,15 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 		philo->num_of_meals = ft_atoi(av[5]);
 	if (!malloc_philo(philo))
 		return (0);
-	philo->rfork = &philo->input->forks[philo->num - 1];
+	philo->rfork = philo->input->forks[philo->num - 1];
 	if (philo->num == philo->num_of_phil)
-		philo->lfork = &philo->input->forks[0];
+		philo->lfork = philo->input->forks[0];
 	else
-		philo->lfork = &philo->input->forks[philo->num];
-	pthread_mutex_init(&(philo)->check, NULL);
-	pthread_mutex_init(philo->eat, NULL);
-	set_bool(&(philo)->check, (philo)->full, false);
-	set_bool(&(philo)->check, (philo)->die, false);
-	now(&(philo)->check, philo->start);
-	now(&(philo)->check, philo->last);
+		philo->lfork = philo->input->forks[philo->num];
+	set_bool(&(philo->lock), (philo)->full, false);
+	set_bool(&(philo->lock), (philo)->die, false);
+	now(&(philo->lock), philo->start);
+	now(&(philo->lock), philo->last);
 	return (1);
 }
 
@@ -95,23 +84,21 @@ void	*lone_routine(void *philos)
 	struct timeval	t;
 
 	philo = *(t_philo *)philos;
-	while (!get_bool(&philo.check, &philo.input->ready))
+	while (!get_bool(&philo.lock, &philo.input->ready))
 		;
 	get_time(&philo, &t);
-	now(&(philo).check, philo.start);
-	now(&(philo).check, philo.last);
+	now(&(philo).lock, philo.start);
+	now(&(philo).lock, philo.last);
 	usleep(philo.time_to_die / 2);
 	while (t.tv_sec - philo.start->tv_sec < philo.time_to_sleep &&
-		!get_bool(&(philo).input->death->die_lock, philo.die))
-		now(&(philo).check, &t);
+		!get_bool(&(philo).input->lock, philo.die))
+		now(&(philo).lock, &t);
 	return (philos);
 }
 
-
-
-int	setup_philos(t_input *input, int ac, char *av[])
+long	setup_philos(t_input *input, long ac, char *av[])
 {
-	int	i;
+	long	i;
 
 	i = -1;
 	if (input->num_of_phil == 1)
@@ -135,19 +122,14 @@ int	setup_philos(t_input *input, int ac, char *av[])
 			}
 		}
 	}
-	set_bool(&(input)->prt, &input->ready, true);
-	if (pthread_create(input->death->thread, NULL, &droutine, input))
-	{
-		free_input(input);
-		return (0);
-	}
+	set_bool(&(input)->lock, &input->ready, true);
 	while (--i >= 0)
 		pthread_join(*(input)->philos[i].philo, NULL);
-	pthread_join(*(input)->death->thread, NULL);
+	droutine(input);
 	return (1);
 }
 
-int	setup_input(int ac, char *av[], t_input *input)
+long	setup_input(long ac, char *av[], t_input *input)
 {
 	input->num_of_phil = ft_atoi(av[1]);
 	input->time_to_die = ft_atoi(av[2]);
@@ -160,30 +142,13 @@ int	setup_input(int ac, char *av[], t_input *input)
 	input->philos = malloc(sizeof(t_philo) * (input->num_of_phil));
 	if (!input->philos)
 		return (0);
-	input->death = malloc(sizeof(t_death) * 1);
-	if (!input->death)
-		return (0);
-	input->death->thread = malloc(sizeof(pthread_t) * 1);
-	if (!input->death->thread)
-		return (0);
-	input->death->ate = false;
-	// &(input)->death.full_lock = malloc(sizeof(pthread_mutex_t) * 1);
-	// if (!input->death->full_lock)
-	// 	return (0);
-	// input->death.die_lock = malloc(sizeof(pthread_mutex_t) * 1);
-	// if (!input->death->die_lock)
-	// 	return (0);
-	// input->death-> = malloc(sizeof(pthread_mutex_t) * 1);
-	// if (!input->death->time_lock)
-	// 	return (0);
-	pthread_mutex_init(&(input->death->full_lock), NULL);
-	pthread_mutex_init(&(input->death->die_lock), NULL);
-	pthread_mutex_init(&(input->death->time_lock), NULL);
-	pthread_mutex_init(&(input->prt), NULL);
+	input->ate = false;
+	input->dead = false;
+	pthread_mutex_init(&(input->lock), NULL);
 	return (1);
 }
 
-int	init(int ac, char *av[], t_input *input)
+long	init(long ac, char *av[], t_input *input)
 {
 	if (ac < 5 || ac > 6)
 	{

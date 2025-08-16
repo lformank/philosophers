@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/16 16:03:09 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/16 17:35:24 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,33 +35,34 @@ enum	e_mode
 
 typedef struct s_input
 {
-	int				num_of_phil;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
-	int				num_of_meals;
+	long			num_of_phil;
+	long			time_to_die;
+	long			time_to_eat;
+	long			time_to_sleep;
+	long			num_of_meals;
 	bool			ready;
-	pthread_mutex_t	prt;
+	pthread_mutex_t	lock;
 	pthread_mutex_t	*forks;
 	struct s_philo	*philos;
 	struct s_death	*death;
+	bool			*ate;
+	bool			*dead;
 }	t_input;
 
 typedef struct s_philo
 {
-	int				num;
-	int				num_of_phil;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
-	int				num_of_meals;
+	long				num;
+	long				num_of_phil;
+	long				time_to_die;
+	long				time_to_eat;
+	long				time_to_sleep;
+	long				num_of_meals;
 	enum e_mode		action;
 	t_input			*input;
 	pthread_t		*philo;
-	pthread_mutex_t	check;
-	pthread_mutex_t	*eat;
-	pthread_mutex_t	*lfork;
-	pthread_mutex_t	*rfork;
+	pthread_mutex_t	lock;
+	pthread_mutex_t	lfork;
+	pthread_mutex_t	rfork;
 	bool			*die;
 	bool			*full;
 	struct timeval	*start;
@@ -69,42 +70,31 @@ typedef struct s_philo
 	struct timeval	*last;
 }	t_philo;
 
-typedef struct s_death
-{
-	t_philo			*philo;
-	t_input			*input;
-	pthread_t		*thread;
-	bool			*ate;
-	pthread_mutex_t	die_lock;
-	pthread_mutex_t	full_lock;
-	pthread_mutex_t	time_lock;
-}	t_death;
-
 /* INICIALIZE */
-int			init(int ac, char *av[], t_input *input);
-int			setup_input(int ac, char *av[], t_input *input);
-int			setup_philos(t_input *input, int ac, char *av[]);
-int			setup_philo(t_philo *philo, int i, int ac, char *av[]);
-int			setup_forks(t_input *input);
+long			init(long ac, char *av[], t_input *input);
+long			setup_input(long ac, char *av[], t_input *input);
+long			setup_philos(t_input *input, long ac, char *av[]);
+long			setup_philo(t_philo *philo, long i, long ac, char *av[]);
+long			setup_forks(t_input *input);
 
 /* UTILS */
-int			ft_atoi(const char *nptr);
-int			ft_strlen(const char *s);
-long int	now(pthread_mutex_t *lock, struct timeval *t);
+long			ft_atoi(const char *nptr);
+long			ft_strlen(const char *s);
+long	now(pthread_mutex_t *lock, struct timeval *t);
 void		get_time(t_philo *philo, struct timeval *t);
 void		free_input(t_input *input);
 void		set_bool(pthread_mutex_t *lock, bool *variable, bool value);
 bool		get_bool(pthread_mutex_t *lock, bool *variable);
-long int	get_long(pthread_mutex_t *lock, long int *variable);
-void		set_long(pthread_mutex_t *lock, long int *variable, long int value);
-void		print_action(pthread_mutex_t *lock, t_philo *philo, long int time,
+long	get_long(pthread_mutex_t *lock, long *variable);
+void		set_long(pthread_mutex_t *lock, long *variable, long value);
+void		print_action(pthread_mutex_t *lock, t_philo *philo, long time,
 				enum e_mode action);
 
 /* CONDITIONS */
 void		wrong_input(void);
-int			is_it_num(char *av[], int ac);
+long			is_it_num(char *av[], long ac);
 
 /* ROUTINE */
-void		*routine(void *input);
-void		*droutine(void *table);
+void	*routine(void *input);
+void	droutine(t_input *input);
 #endif

@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/10 11:19:57 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/16 16:33:23 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@ meals>\"", 136);
 	return ;
 }
 
-int	is_it_num(char *av[], int ac)
+long	is_it_num(char *av[], long ac)
 {
-	int	i;
-	int	j;
-	int	num;
+	long	i;
+	long	j;
+	long	num;
 
 	i = 0;
 	num = 0;
