@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/21 15:35:33 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/16 15:59:46 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,13 @@ void	get_time(t_philo *philo, struct timeval *t)
 
 void	thinking(t_philo *philo)
 {
-	print_action(&(philo)->input->prt, philo, philo->start->tv_sec, THINKING);
+	if (get_bool(&philo->input->death->die_lock, philo->die))
+		return ;
+	print_action(&philo->input->prt, philo, philo->start->tv_sec, THINKING);
+	usleep(500);
 	while (philo->lfork->__data.__lock && philo->rfork->__data.__lock)
 	{
-		if (get_bool(philo->input->death->die_lock, philo->die))
+		if (get_bool(&philo->input->death->die_lock, philo->die))
 			return ;
 	}
 }
@@ -45,13 +48,21 @@ void	get_fork(t_philo *philo)
 {
 	if (philo->num_of_phil % 2 == 1)
 	{
+		printf("DEBUG: Philo %d TRYING to take LEFT fork\n", philo->num);
 		pthread_mutex_lock(philo->lfork);
+		printf("DEBUG: Philo %d has TAKEN LEFT fork\n", philo->num);
+		printf("DEBUG: Philo %d TRYING to take RIGHT fork\n", philo->num);
 		pthread_mutex_lock(philo->rfork);
+		printf("DEBUG: Philo %d has TAKEN RIGHT fork\n", philo->num);
 	}
 	else
 	{
+		printf("DEBUG: Philo %d TRYING to take RIGHT fork\n", philo->num);
 		pthread_mutex_lock(philo->rfork);
+		printf("DEBUG: Philo %d has TAKEN RIGHT fork\n", philo->num);
+		printf("DEBUG: Philo %d TRYING to take LEFT fork\n", philo->num);
 		pthread_mutex_lock(philo->lfork);
+		printf("DEBUG: Philo %d has TAKEN LEFT fork\n", philo->num);
 	}
 	print_action(&(philo)->input->prt, philo, philo->start->tv_sec, FORKING);
 	print_action(&(philo)->input->prt, philo, philo->start->tv_sec, FORKING);
@@ -62,15 +73,17 @@ void	eating(t_philo *philo)
 	struct timeval	t;
 
 	get_fork(philo);
-	get_time(philo, &t);
 	now(&(philo)->check, philo->last);
+	get_time(philo, &t);
 	print_action(&(philo)->input->prt, philo, philo->start->tv_sec, EATING);
 	usleep((t.tv_sec - philo->timer->tv_sec) / 2);
 	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_eat
-		&& !get_bool(philo->input->death->die_lock, philo->die))
+		&& !get_bool(&philo->input->death->die_lock, philo->die))
 		now(&(philo)->check, &t);
 	pthread_mutex_unlock(philo->lfork);
+    printf("DEBUG: Philo %d has RELEASED LEFT fork\n", philo->num);
 	pthread_mutex_unlock(philo->rfork);
+    printf("DEBUG: Philo %d has RELEASED RIGHT fork\n", philo->num);
 	now(&(philo)->check, philo->last);
 }
 
@@ -79,10 +92,12 @@ void	sleeping(t_philo *philo)
 	struct timeval	t;
 
 	get_time(philo, &t);
+	if (get_bool(&philo->input->death->die_lock, philo->die))
+		return ;
 	print_action(&(philo)->input->prt, philo, philo->start->tv_sec, SLEEPING);
 	usleep((t.tv_sec - philo->timer->tv_sec) / 2);
 	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_sleep
-		&& !get_bool(philo->input->death->die_lock, philo->die))
+		&& !get_bool(&philo->input->death->die_lock, philo->die))
 		now(&(philo)->check, &t);
 }
 
@@ -98,21 +113,20 @@ void	*routine(void *philos)
 	now(&(philo).check, philo.start);
 	now(&(philo).check, philo.last);
 	if (philo.num % 2 == 1)
-	{
-		usleep(5);
 		thinking(&philo);
-	}
-	while (!get_bool((philo).input->death->die_lock, philo.die))
+	while (!get_bool(&(philo.input->death->die_lock), philo.die))
 	{
 		eating(&philo);
 		if (philo.num_of_meals != 0 && ++i == philo.num_of_meals)
-			set_bool(philo.input->death->full_lock, philo.full, true);
-		if (get_bool(philo.input->death->die_lock, philo.die))
+			set_bool(&(philo.input->death->full_lock), philo.full, true);
+		if (get_bool(&(philo.input->death->die_lock), philo.die))
 			break ;
 		sleeping(&philo);
-		if (get_bool(philo.input->death->die_lock, philo.die))
+		if (get_bool(&(philo.input->death->die_lock), philo.die))
 			break ;
 		thinking(&philo);
+		if (get_bool(&(philo.input->death->die_lock), philo.die))
+			break ;
 	}
 	return (philos);
 }

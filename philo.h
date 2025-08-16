@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/21 15:14:55 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/16 16:03:09 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ typedef struct s_input
 	int				time_to_sleep;
 	int				num_of_meals;
 	bool			ready;
-	bool			simul;
 	pthread_mutex_t	prt;
 	pthread_mutex_t	*forks;
 	struct s_philo	*philos;
@@ -76,9 +75,9 @@ typedef struct s_death
 	t_input			*input;
 	pthread_t		*thread;
 	bool			*ate;
-	pthread_mutex_t	*die_lock;
-	pthread_mutex_t	*full_lock;
-	pthread_mutex_t	*time_lock;
+	pthread_mutex_t	die_lock;
+	pthread_mutex_t	full_lock;
+	pthread_mutex_t	time_lock;
 }	t_death;
 
 /* INICIALIZE */
