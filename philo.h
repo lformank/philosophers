@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/18 17:07:54 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/21 15:14:55 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,11 @@ typedef struct s_philo
 	t_input			*input;
 	pthread_t		*philo;
 	pthread_mutex_t	check;
+	pthread_mutex_t	*eat;
 	pthread_mutex_t	*lfork;
 	pthread_mutex_t	*rfork;
-	bool			die;
-	bool			full;
+	bool			*die;
+	bool			*full;
 	struct timeval	*start;
 	struct timeval	*timer;
 	struct timeval	*last;
@@ -75,8 +76,9 @@ typedef struct s_death
 	t_input			*input;
 	pthread_t		*thread;
 	bool			*ate;
-	pthread_mutex_t	*death_lock;
-	pthread_mutex_t	*lock;
+	pthread_mutex_t	*die_lock;
+	pthread_mutex_t	*full_lock;
+	pthread_mutex_t	*time_lock;
 }	t_death;
 
 /* INICIALIZE */

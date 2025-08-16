@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/05/18 17:08:23 by lformank         ###   ########.fr       */
+/*   Updated: 2025/05/21 15:15:21 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,15 @@ int	malloc_philo(t_philo *philo)
 	philo->rfork = malloc(sizeof(pthread_mutex_t) * 1);
 	if (!philo->rfork)
 		return (0);
+	philo->eat = malloc(sizeof(pthread_mutex_t) * 1);
+	if (!philo->eat)
+		return (0);
+	philo->die = malloc(sizeof(bool) * 1);
+	if (!philo->die)
+		return (0);
+	philo->full = malloc(sizeof(bool) * 1);
+	if (!philo->full)
+		return (0);
 	return (1);
 }
 
@@ -71,9 +80,10 @@ int	setup_philo(t_philo *philo, int i, int ac, char *av[])
 		philo->lfork = &philo->input->forks[0];
 	else
 		philo->lfork = &philo->input->forks[philo->num];
-	philo->die = false;
 	pthread_mutex_init(&(philo)->check, NULL);
-	set_bool(&(philo)->check, &(philo)->full, false);
+	pthread_mutex_init(philo->eat, NULL);
+	set_bool(&(philo)->check, (philo)->full, false);
+	set_bool(&(philo)->check, (philo)->die, false);
 	now(&(philo)->check, philo->start);
 	now(&(philo)->check, philo->last);
 	return (1);
@@ -85,11 +95,14 @@ void	*lone_routine(void *philos)
 	struct timeval	t;
 
 	philo = *(t_philo *)philos;
+	while (!get_bool(&philo.check, &philo.input->ready))
+		;
 	get_time(&philo, &t);
 	now(&(philo).check, philo.start);
 	now(&(philo).check, philo.last);
 	usleep(philo.time_to_die / 2);
-	while (t.tv_sec - philo.timer->tv_sec < philo.time_to_sleep)
+	while (t.tv_sec - philo.start->tv_sec < philo.time_to_sleep &&
+		!get_bool(philo.input->death->die_lock, philo.die))
 		now(&(philo).check, &t);
 	return (philos);
 }
@@ -120,7 +133,7 @@ int	setup_philos(t_input *input, int ac, char *av[])
 			}
 		}
 	}
-	set_bool(input->death->lock, &input->ready, true);
+	set_bool(&(input)->prt, &input->ready, true);
 	if (pthread_create(input->death->thread, NULL, &droutine, input))
 		return (0);
 	while (--i >= 0)
@@ -150,14 +163,18 @@ int	setup_input(int ac, char *av[], t_input *input)
 	if (!input->death->thread)
 		return (0);
 	input->death->ate = false;
-	input->death->lock = malloc(sizeof(pthread_mutex_t) * 1);
-	if (!input->death->lock)
+	input->death->full_lock = malloc(sizeof(pthread_mutex_t) * 1);
+	if (!input->death->full_lock)
 		return (0);
-	input->death->death_lock = malloc(sizeof(pthread_mutex_t) * 1);
-	if (!input->death->death_lock)
+	input->death->die_lock = malloc(sizeof(pthread_mutex_t) * 1);
+	if (!input->death->die_lock)
 		return (0);
-	pthread_mutex_init(input->death->lock, NULL);
-	pthread_mutex_init(input->death->death_lock, NULL);
+	input->death->time_lock = malloc(sizeof(pthread_mutex_t) * 1);
+	if (!input->death->time_lock)
+		return (0);
+	pthread_mutex_init(input->death->full_lock, NULL);
+	pthread_mutex_init(input->death->die_lock, NULL);
+	pthread_mutex_init(input->death->time_lock, NULL);
 	pthread_mutex_init(&input->prt, NULL);
 	return (1);
 }
