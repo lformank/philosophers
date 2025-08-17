@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 14:52:39 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 15:15:45 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,21 @@ void	kill_philos(t_input *input)
 		set_bool(&(input->lock), input->philos[i].die, true);
 }
 
-int	check_death(t_philo *philo, pthread_mutex_t *lock)
+int	check_death(t_philo *philo)
 {
-	if (now() - get_long(&(philo->lock_last), &(philo->last->tv_sec))
-		>= get_long(lock, &(philo->time_to_die)))
+	struct timeval	t;
+	long			since_last;
+
+	pthread_mutex_lock(&(philo->input->lock));
+	gettimeofday(&t, NULL);
+	t.tv_sec = t.tv_sec * 1000 + t.tv_usec / 1000;
+	since_last = t.tv_sec - philo->last->tv_sec;
+	if (since_last >= philo->time_to_die)
 	{
-		set_bool(lock, philo->die, true);
+		pthread_mutex_unlock(&(philo->input->lock));
 		return (1);
 	}
+	pthread_mutex_unlock(&(philo->input->lock));
 	return (0);
 }
 
@@ -58,7 +65,7 @@ void	droutine(t_input *input)
 	i = 0;
 	while (!get_bool(&(input->lock), input->philos[i].die))
 	{
-		if (check_death(&(input->philos[i]), &(input->lock)) == 1)
+		if (check_death(&(input->philos[i])) == 1)
 		{
 			print_action(&(input->lock), &input->philos[i],
 				get_long(&(input->lock), &(input->philos[i].start->tv_sec)), DIE);

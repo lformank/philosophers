@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 14:41:34 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 15:15:13 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,15 +68,13 @@ void	eating(t_philo *philo)
 	struct timeval	t;
 
 	get_fork(philo);
-	pthread_mutex_lock(&(philo->lock_last));
-	t.tv_sec = get_time(philo);
+	set_long(&(philo->input->lock), &(philo->last->tv_sec), now());
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, EATING);
-	usleep((t.tv_sec - philo->timer->tv_sec) / 2);
-	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_eat
+	usleep(philo->time_to_eat / 2);
+	while (philo->time_to_sleep < philo->time_to_eat
 		&& !get_bool(&(philo->lock), philo->die))
 		t.tv_sec = now();
-	philo->last->tv_sec = now();
-	pthread_mutex_unlock(&(philo->lock_last));
+	set_long(&(philo->input->lock), &(philo->last->tv_sec), now());
 	pthread_mutex_unlock(philo->lfork);
 	pthread_mutex_unlock(philo->rfork);
 }
