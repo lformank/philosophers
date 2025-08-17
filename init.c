@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 11:39:34 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 14:29:13 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,13 +86,13 @@ void	*lone_routine(void *philos)
 	philo = *(t_philo *)philos;
 	while (!get_bool(&(philo.lock), &(philo.input->ready)))
 		;
-	get_time(&philo, &t);
-	now(&(philo.lock), philo.start);
-	now(&(philo.lock), philo.last);
+	t.tv_sec = get_time(&philo);
+	philo.start->tv_sec = now();
+	philo.last->tv_sec = now();
 	usleep(philo.time_to_die / 2);
 	while (t.tv_sec - philo.start->tv_sec < philo.time_to_sleep &&
 		!get_bool(&(philo.lock), philo.die))
-		now(&(philo.lock), &t);
+		t.tv_sec = now();
 	return (philos);
 }
 
@@ -123,10 +123,10 @@ int	setup_philos(t_input *input, long ac, char *av[])
 		}
 	}
 	set_bool(&(input->lock), &input->ready, true);
-	while (--i >= 0)
-		pthread_join(*(input)->philos[i].philo, NULL);
+	// while (--i >= 0)
+	// 	pthread_join(*(input)->philos[i].philo, NULL);
 	droutine(input);
-	free_input(input);
+	// free_input(input);
 	return (1);
 }
 

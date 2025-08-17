@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 11:31:13 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 14:26:32 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,15 +81,16 @@ long			setup_forks(t_input *input);
 /* UTILS */
 long			ft_atoi(const char *nptr);
 long			ft_strlen(const char *s);
-long	now(pthread_mutex_t *lock, struct timeval *t);
-void		get_time(t_philo *philo, struct timeval *t);
-void		free_input(t_input *input);
-void		set_bool(pthread_mutex_t *lock, bool *variable, bool value);
-bool		get_bool(pthread_mutex_t *lock, bool *variable);
-long	get_long(pthread_mutex_t *lock, long *variable);
-void		set_long(pthread_mutex_t *lock, long *variable, long value);
-void		print_action(pthread_mutex_t *lock, t_philo *philo, long time,
-				enum e_mode action);
+long			now(void);
+long			get_time(t_philo *philo);
+void			free_input(t_input *input);
+void			set_bool(pthread_mutex_t *lock, bool *variable, bool value);
+void			set_long(pthread_mutex_t *lock, long *variable, long value);
+bool			get_bool(pthread_mutex_t *lock, bool *variable);
+long			get_long(pthread_mutex_t *lock, long *variable);
+struct timeval	get_timeval(pthread_mutex_t *lock, struct timeval *time);
+void			print_action(pthread_mutex_t *lock, t_philo *philo, long time,
+					enum e_mode action);
 
 /* CONDITIONS */
 void		wrong_input(void);

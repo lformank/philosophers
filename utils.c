@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 11:12:14 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 11:15:47 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 14:31:02 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	print_action(pthread_mutex_t *lock, t_philo *philo, long time,
 	struct timeval	t;
 
 	pthread_mutex_lock(lock);
-	now(&(philo->lock), &t);
+	t.tv_sec = now();
 	if (to_print == 4 && get_bool(&(philo->lock), philo->die) == true)
 	{
 		printf("%ld %d died\n", t.tv_sec - time, philo->num);
@@ -33,6 +33,16 @@ void	print_action(pthread_mutex_t *lock, t_philo *philo, long time,
 	else if (to_print == 0)
 		printf("%ld %d has taken a fork\n", t.tv_sec - time, philo->num);
 	pthread_mutex_unlock(lock);
+}
+
+struct timeval	get_timeval(pthread_mutex_t *lock, struct timeval *time)
+{
+	struct timeval	temp;
+
+	pthread_mutex_lock(lock);
+	temp = *time;
+	pthread_mutex_unlock(lock);
+	return (temp);
 }
 
 bool	get_bool(pthread_mutex_t *lock, bool *variable)
