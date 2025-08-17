@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 15:49:10 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 17:07:13 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,21 +21,20 @@ void	kill_philos(t_input *input)
 		set_bool(&(input->philos[i].lock), input->philos[i].die, true);
 }
 
-int	check_death(t_philo *philo)
+int	check_death(t_input *input)
 {
 	struct timeval	t;
 	long			since_last;
+	int				i;
 
-	pthread_mutex_lock(&(philo->lock));
-	gettimeofday(&t, NULL);
-	t.tv_sec = t.tv_sec * 1000 + t.tv_usec / 1000;
-	since_last = t.tv_sec - philo->last->tv_sec;
-	if (since_last >= philo->time_to_die)
+	i = -1;
+	while (++i < input->num_of_phil)
 	{
-		pthread_mutex_unlock(&(philo->lock));
-		return (1);
+		t.tv_sec = now();
+		since_last = t.tv_sec - get_long(&(input->philos[i].lock_last), &(input->philos[i].last->tv_sec));
+		if (since_last >= input->time_to_die)
+			return (1);
 	}
-	pthread_mutex_unlock(&(philo->lock));
 	return (0);
 }
 
@@ -46,12 +45,12 @@ int	check_meals(t_input *input)
 
 	i = -1;
 	count = 0;
+	if (input->num_of_meals == 0)
+		return (0);
 	while (++i < input->num_of_phil)
 	{
 		if (get_bool(&(input->philos[i].lock), input->philos[i].full) == true)
-		{
 			count++;
-		}
 		if (count == input->num_of_phil)
 			return (1);
 	}
@@ -60,22 +59,28 @@ int	check_meals(t_input *input)
 
 void	droutine(t_input *input)
 {
-	long		i;
+	long	i;
+	long	start;
 
 	i = 0;
-	while (!get_bool(&(input->philos[i].lock), input->philos[i].die))
+	while (1)
 	{
-		if (check_death(&(input->philos[i])) == 1)
+		if (check_death(input) == 1)
 		{
-			print_action(&(input->lock), &input->philos[i], input->philos[i].start->tv_sec, DIE);
+			start = get_long(&(input->philos[i].lock),
+				&input->philos[i].start->tv_sec);
+			print_action(&(input->lock), &input->philos[i], start, DIE);
 			kill_philos(input);
-			return ;
+			break ;
 		}
 		if (check_meals(input) == 1)
+		{
 			kill_philos(input);
-		if (i == input->num_of_phil - 1)
+			break ;
+		}
+		if (i == input->num_of_phil)
 			i = 0;
 		i++;
 	}
-	free_input(input);
+	// free_input(input);
 }

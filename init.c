@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 14:42:56 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 17:06:11 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ long	setup_philo(t_philo *philo, long i, long ac, char *av[])
 	return (1);
 }
 
-void	*lone_routine(void *philos)
+void	*aroutine(void *philos)
 {
 	t_philo	philo;
 	struct timeval	t;
@@ -87,8 +87,8 @@ void	*lone_routine(void *philos)
 	while (!get_bool(&(philo.lock), &(philo.input->ready)))
 		;
 	t.tv_sec = get_time(&philo);
-	set_long(&(philo.input->lock), &(philo.start->tv_sec), now());
-	set_long(&(philo.input->lock), &(philo.last->tv_sec), now());
+	set_long(&(philo.lock), &(philo.start->tv_sec), now());
+	set_long(&(philo.lock_last), &(philo.last->tv_sec), now());
 	usleep(philo.time_to_die / 2);
 	while (t.tv_sec - get_long(&(philo.input->lock), &(philo.start->tv_sec)) < philo.time_to_sleep &&
 		!get_bool(&(philo.lock), philo.die))
@@ -105,7 +105,7 @@ int	setup_philos(t_input *input, long ac, char *av[])
 	{
 		input->philos[0].input = input;
 		setup_philo(&(input)->philos[0], 0, ac, av);
-		pthread_create(input->philos[0].philo, NULL, &lone_routine, input->philos);
+		pthread_create(input->philos[0].philo, NULL, &aroutine, input->philos);
 	}
 	else
 	{
@@ -123,10 +123,9 @@ int	setup_philos(t_input *input, long ac, char *av[])
 		}
 	}
 	set_bool(&(input->lock), &input->ready, true);
-	// while (--i >= 0)
-	// 	pthread_join(*(input)->philos[i].philo, NULL);
 	droutine(input);
-	// free_input(input);
+	while (--i >= 0)
+		pthread_join(*(input)->philos[i].philo, NULL);
 	return (1);
 }
 

@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 15:48:19 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 17:09:30 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,10 +70,14 @@ void	eating(t_philo *philo)
 	get_fork(philo);
 	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, EATING);
+	t.tv_sec = get_time(philo);
 	usleep(philo->time_to_eat / 2);
-	while (philo->time_to_sleep < philo->time_to_eat
+	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_eat
 		&& !get_bool(&(philo->lock), philo->die))
+	{
 		t.tv_sec = now();
+		printf("last: %ld\n", t.tv_sec - philo->timer->tv_sec);
+	}
 	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	pthread_mutex_unlock(philo->lfork);
 	pthread_mutex_unlock(philo->rfork);
@@ -110,7 +114,7 @@ void	*routine(void *philos)
 	{
 		eating(philo);
 		if (philo->num_of_meals != 0 && ++i == philo->num_of_meals)
-			set_bool(&(philo->lock_last), philo->full, true);
+			set_bool(&(philo->lock), philo->full, true);
 		if (get_bool(&(philo->lock), philo->die))
 			break ;
 		sleeping(philo);
