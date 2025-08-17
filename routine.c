@@ -6,26 +6,17 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 21:04:14 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 21:54:37 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long	now(void)
+void	thinking(t_philo *phil)
 {
-	struct timeval	t;
-
-	gettimeofday(&t, NULL);
-	t.tv_sec = t.tv_sec * 1000 + t.tv_usec / 1000;
-	return (t.tv_sec);
-}
-
-void	thinking(t_philo *philo)
-{
-	if (get_bool(&(philo->lock), philo->die))
+	if (get_bool(&(phil->lock), phil->die))
 		return ;
-	print_action(&(philo->input->lock), philo, *(philo->input->start), THINKING);
+	print_action(&(phil->input->lock), phil, *(phil->input->start), THINKING);
 	usleep(500);
 }
 
@@ -73,7 +64,7 @@ void	sleeping(t_philo *philo)
 	since_sleep = now();
 	if (get_bool(&(philo->lock), philo->die))
 		return ;
-	print_action(&(philo->input->lock), philo, *(philo->input->start), SLEEPING);
+	print_action(&(philo->input->lock), philo, *(philo->input->start), SLEEP);
 	usleep(philo->time_to_sleep / 2);
 	while (now() - since_sleep < philo->time_to_sleep
 		&& !get_bool(&(philo->lock), philo->die))
@@ -83,7 +74,7 @@ void	sleeping(t_philo *philo)
 void	*routine(void *philos)
 {
 	t_philo	*philo;
-	long		i;
+	int		i;
 
 	i = 0;
 	philo = (t_philo *)philos;

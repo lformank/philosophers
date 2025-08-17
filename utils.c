@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 11:12:14 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 21:03:31 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 22:21:30 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,69 +19,56 @@ void	print_action(pthread_mutex_t *lock, t_philo *philo, long time,
 
 	pthread_mutex_lock(lock);
 	t = now();
-	if (to_print == 4 )
-	{
+	if (to_print == 4 && !get_bool(&(philo->lock), philo->die))
 		printf("%ld %d died\n", t - time, philo->num);
-		return ;
-	}
-	else if (to_print == 1)
+	else if (to_print == 1 && !get_bool(&(philo->lock), philo->die))
 		printf("%ld %d is eating\n", t - time, philo->num);
-	else if (to_print == 2)
+	else if (to_print == 2 && !get_bool(&(philo->lock), philo->die))
 		printf("%ld %d is sleeping\n", t - time, philo->num);
-	else if (to_print == 3)
+	else if (to_print == 3 && !get_bool(&(philo->lock), philo->die))
 		printf("%ld %d is thinking\n", t - time, philo->num);
-	else if (to_print == 0)
+	else if (to_print == 0 && !get_bool(&(philo->lock), philo->die))
 		printf("%ld %d has taken a fork\n", t - time, philo->num);
 	pthread_mutex_unlock(lock);
 }
 
-struct timeval	get_timeval(pthread_mutex_t *lock, struct timeval *time)
+long	now(void)
 {
-	struct timeval	temp;
+	struct timeval	t;
 
-	pthread_mutex_lock(lock);
-	temp = *time;
-	pthread_mutex_unlock(lock);
-	return (temp);
+	gettimeofday(&t, NULL);
+	t.tv_sec = t.tv_sec * 1000 + t.tv_usec / 1000;
+	return (t.tv_sec);
 }
 
-bool	get_bool(pthread_mutex_t *lock, bool *variable)
+void	free_input(t_input *input)
 {
-	bool	value;
+	int	i;
 
-	pthread_mutex_lock(lock);
-	value = *variable;
-	pthread_mutex_unlock(lock);
-	return (value);
+	i = -1;
+	while (input->philos && ++i < input->num_of_phil)
+	{
+		free(input->philos[i].philo);
+		free(input->philos[i].last);
+		free(input->philos[i].die);
+		free(input->philos[i].full);
+		free(input->philos[i].philo);
+		pthread_mutex_destroy(&(input->philos[i].lock));
+	}
+	if (input->philos)
+		free(input->philos);
+	i = -1;
+	while (input->forks && ++i < input->num_of_phil)
+		pthread_mutex_destroy(&(input->forks[i]));
+	if (input->forks)
+		free(input->forks);
+	pthread_mutex_destroy(&(input->lock));
+	free(input->start);
 }
 
-void	set_bool(pthread_mutex_t *lock, bool *variable, bool value)
+int	ft_strlen(const char *s)
 {
-	pthread_mutex_lock(lock);
-	*variable = value;
-	pthread_mutex_unlock(lock);
-}
-
-long	get_long(pthread_mutex_t *lock, long *variable)
-{
-	long	value;
-
-	pthread_mutex_lock(lock);
-	value = *variable;
-	pthread_mutex_unlock(lock);
-	return (value);
-}
-
-void	set_long(pthread_mutex_t *lock, long *variable, long value)
-{
-	pthread_mutex_lock(lock);
-	*variable = value;
-	pthread_mutex_unlock(lock);
-}
-
-long	ft_strlen(const char *s)
-{
-	long	i;
+	int	i;
 
 	i = 0;
 	while (s[i])
@@ -89,12 +76,12 @@ long	ft_strlen(const char *s)
 	return (i);
 }
 
-long	ft_atoi(const char *nptr)
+int	ft_atoi(const char *nptr)
 {
-	long			i;
-	long	n;
-	long			minus;
-	bool		no_num;
+	int	i;
+	int	n;
+	int	minus;
+	int	no_num;
 
 	i = -1;
 	n = 0;
