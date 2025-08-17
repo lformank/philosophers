@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 11:21:41 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 11:33:14 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	thinking(t_philo *philo)
 		return ;
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, THINKING);
 	usleep(500);
-	while (philo->lfork.__data.__lock && philo->rfork.__data.__lock)
+	while (philo->lfork->__data.__lock && philo->rfork->__data.__lock)
 	{
 		if (get_bool(&(philo->lock), philo->die))
 			return ;
@@ -48,13 +48,13 @@ void	get_fork(t_philo *philo)
 {
 	if (philo->num_of_phil % 2 == 1)
 	{
-		pthread_mutex_lock(&(philo->lfork));
-		pthread_mutex_lock(&(philo->rfork));
+		pthread_mutex_lock(philo->lfork);
+		pthread_mutex_lock(philo->rfork);
 	}
 	else
 	{
-		pthread_mutex_lock(&(philo->rfork));
-		pthread_mutex_lock(&(philo->lfork));
+		pthread_mutex_lock(philo->rfork);
+		pthread_mutex_lock(philo->lfork);
 	}
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, FORKING);
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, FORKING);
@@ -65,16 +65,17 @@ void	eating(t_philo *philo)
 	struct timeval	t;
 
 	get_fork(philo);
-	now(&(philo->lock), philo->last);
+	pthread_mutex_lock(&(philo->lock_last));
 	get_time(philo, &t);
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, EATING);
 	usleep((t.tv_sec - philo->timer->tv_sec) / 2);
 	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_eat
 		&& !get_bool(&(philo->lock), philo->die))
 		now(&(philo->lock), &t);
-	pthread_mutex_unlock(&(philo->lfork));
-	pthread_mutex_unlock(&(philo->rfork));
 	now(&(philo->lock), philo->last);
+	pthread_mutex_unlock(philo->lfork);
+	pthread_mutex_unlock(philo->rfork);
+	pthread_mutex_unlock(&(philo->lock_last));
 }
 
 void	sleeping(t_philo *philo)

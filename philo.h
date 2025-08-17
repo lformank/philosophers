@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 11:01:01 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 11:31:13 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,9 @@ typedef struct s_philo
 	t_input			*input;
 	pthread_t		*philo;
 	pthread_mutex_t	lock;
-	pthread_mutex_t	lfork;
-	pthread_mutex_t	rfork;
+	pthread_mutex_t	lock_last;
+	pthread_mutex_t	*lfork;
+	pthread_mutex_t	*rfork;
 	bool			*die;
 	bool			*full;
 	struct timeval	*start;

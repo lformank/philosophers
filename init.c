@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 11:14:11 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 11:39:34 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,15 +66,15 @@ long	setup_philo(t_philo *philo, long i, long ac, char *av[])
 		philo->num_of_meals = ft_atoi(av[5]);
 	if (!malloc_philo(philo))
 		return (0);
-	philo->rfork = philo->input->forks[philo->num - 1];
+	philo->rfork = &(philo->input->forks[philo->num - 1]);
 	if (philo->num == philo->num_of_phil)
-		philo->lfork = philo->input->forks[0];
+		philo->lfork = &(philo->input->forks[0]);
 	else
-		philo->lfork = philo->input->forks[philo->num];
+		philo->lfork = &(philo->input->forks[philo->num]);
+	pthread_mutex_init(&(philo->lock), NULL);
+	pthread_mutex_init(&(philo->lock_last), NULL);
 	set_bool(&(philo->lock), (philo)->full, false);
 	set_bool(&(philo->lock), (philo)->die, false);
-	now(&(philo->lock), philo->start);
-	now(&(philo->lock), philo->last);
 	return (1);
 }
 

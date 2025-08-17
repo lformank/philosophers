@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 10:55:41 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 11:35:04 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	check_death(t_philo *philo, pthread_mutex_t *lock)
 {
 	struct timeval	t;
 
-	if (now(lock, &t) - get_long(lock, &(philo->last->tv_sec))
+	if (now(lock, &t) - get_long(&(philo->lock_last), &(philo->last->tv_sec))
 		>= get_long(lock, &(philo->time_to_die)))
 	{
 		set_bool(lock, philo->die, true);
