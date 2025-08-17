@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 11:12:14 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 15:32:53 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 17:34:49 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	print_action(pthread_mutex_t *lock, t_philo *philo, long time,
 	if (to_print == 4 && get_bool(&(philo->lock), philo->die) == true)
 	{
 		printf("%ld %d died\n", t.tv_sec - time, philo->num);
+		pthread_mutex_unlock(lock);
 		return ;
 	}
 	else if (to_print == 1)

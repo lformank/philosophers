@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 17:20:57 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 18:39:59 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,25 +23,26 @@ void	kill_philos(t_input *input)
 
 int	check_death(t_input *input)
 {
-	struct timeval	t;
-	long			since_last;
-	int				i;
+	long	t;
+	long	since_last;
+	int		i;
 
-	i = -1;
-	while (++i < input->num_of_phil)
+	i = 0;
+	while (i <= input->num_of_phil)
 	{
-		t.tv_sec = now();
-		since_last = t.tv_sec - get_long(&(input->philos[i].lock), &(input->philos[i].last->tv_sec));
+		t = now();
+		since_last = t - get_long(&(input->philos[i].lock), &(input->philos[i].last->tv_sec));
 		if (since_last >= input->time_to_die)
-			return (1);
+			return (i);
+		i++;
 	}
-	return (0);
+	return (-1);
 }
 
 int	check_meals(t_input *input)
 {
-	long	i;
-	long	count;
+	int	i;
+	int	count;
 
 	i = -1;
 	count = 0;
@@ -59,17 +60,17 @@ int	check_meals(t_input *input)
 
 void	droutine(t_input *input)
 {
-	long	i;
 	long	start;
+	int		dead_i;
 
-	i = 0;
 	while (1)
 	{
-		if (check_death(input) == 1)
+		dead_i = check_death(input);
+		if (dead_i != -1)
 		{
-			start = get_long(&(input->philos[i].lock),
-				&input->philos[i].start->tv_sec);
-			print_action(&(input->lock), &input->philos[i], start, DIE);
+			start = get_long(&(input->philos[dead_i].lock),
+				&input->philos[dead_i].start->tv_sec);
+			print_action(&(input->lock), &input->philos[dead_i], start, DIE);
 			kill_philos(input);
 			break ;
 		}
@@ -78,9 +79,7 @@ void	droutine(t_input *input)
 			kill_philos(input);
 			break ;
 		}
-		if (i == input->num_of_phil)
-			i = 0;
-		i++;
+		usleep(1000);
 	}
 	// free_input(input);
 }
