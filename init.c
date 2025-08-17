@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 20:45:12 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 21:06:06 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,6 @@ long	setup_input(long ac, char *av[], t_input *input)
 	if (!input->start)
 		return (0);
 	input->ate = false;
-	input->dead = false;
 	pthread_mutex_init(&(input->lock), NULL);
 	return (1);
 }

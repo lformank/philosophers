@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 19:47:09 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 20:53:38 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ typedef struct s_input
 	struct s_death	*death;
 	long			*start;
 	bool			*ate;
-	bool			*dead;
 }	t_input;
 
 typedef struct s_philo

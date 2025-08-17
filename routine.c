@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 20:43:20 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 21:04:14 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,16 +31,18 @@ void	thinking(t_philo *philo)
 
 void	get_fork(t_philo *philo)
 {
-	if (philo->num % 2 == 1)
+	if (philo->num % 2 == 1 && !get_bool(&(philo->lock), philo->die))
 	{
 		pthread_mutex_lock(philo->rfork);
 		pthread_mutex_lock(philo->lfork);
+	}
+	else if (!get_bool(&(philo->lock), philo->die))
+	{
+		pthread_mutex_lock(philo->lfork);
+		pthread_mutex_lock(philo->rfork);
 	}
 	else
-	{
-		pthread_mutex_lock(philo->lfork);
-		pthread_mutex_lock(philo->rfork);
-	}
+		return ;
 	print_action(&(philo->input->lock), philo, *(philo->input->start), FORKING);
 	print_action(&(philo->input->lock), philo, *(philo->input->start), FORKING);
 }
