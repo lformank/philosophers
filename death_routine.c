@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 21:47:00 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 22:41:27 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@ void	kill_philos(t_input *input)
 
 int	check_death(t_input *input)
 {
-	long	t;
-	long	since_last;
 	int		i;
+	long	t;
 	long	start;
+	long	since_last;
 
 	i = 0;
 	while (i < input->num_of_phil)
@@ -47,8 +47,9 @@ int	check_death(t_input *input)
 
 int	check_meals(t_input *input)
 {
-	int	i;
-	int	count;
+	int		i;
+	int		count;
+	long	start;
 
 	i = -1;
 	count = 0;
@@ -59,7 +60,11 @@ int	check_meals(t_input *input)
 		if (get_bool(&(input->philos[i].lock), input->philos[i].full) == true)
 			count++;
 		if (count == input->num_of_phil)
+		{
+			start = get_long(&(input->lock), input->start);
+			print_action(&(input->lock), &input->philos[i], start, FULL);
 			return (1);
+		}
 	}
 	return (0);
 }

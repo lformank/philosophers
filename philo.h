@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 22:05:28 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 22:33:20 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ enum	e_mode
 	EATING,
 	SLEEP,
 	THINKING,
-	DIE
+	DIE,
+	FULL
 };
 
 typedef struct s_input
