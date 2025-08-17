@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 11:12:14 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 17:34:49 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 20:42:08 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,23 @@
 void	print_action(pthread_mutex_t *lock, t_philo *philo, long time,
 	enum e_mode to_print)
 {
-	struct timeval	t;
+	long	t;
 
 	pthread_mutex_lock(lock);
-	t.tv_sec = now();
-	if (to_print == 4 && get_bool(&(philo->lock), philo->die) == true)
+	t = now();
+	if (to_print == 4 )
 	{
-		printf("%ld %d died\n", t.tv_sec - time, philo->num);
-		pthread_mutex_unlock(lock);
+		printf("%ld %d died\n", t - time, philo->num);
 		return ;
 	}
 	else if (to_print == 1)
-		printf("%ld %d is eating\n", t.tv_sec - time, philo->num);
+		printf("%ld %d is eating\n", t - time, philo->num);
 	else if (to_print == 2)
-		printf("%ld %d is sleeping\n", t.tv_sec - time, philo->num);
+		printf("%ld %d is sleeping\n", t - time, philo->num);
 	else if (to_print == 3)
-		printf("%ld %d is thinking\n", t.tv_sec - time, philo->num);
+		printf("%ld %d is thinking\n", t - time, philo->num);
 	else if (to_print == 0)
-		printf("%ld %d has taken a fork\n", t.tv_sec - time, philo->num);
+		printf("%ld %d has taken a fork\n", t - time, philo->num);
 	pthread_mutex_unlock(lock);
 }
 

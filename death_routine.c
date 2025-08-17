@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 19:19:49 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 20:45:52 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,20 @@ int	check_death(t_input *input)
 	long	t;
 	long	since_last;
 	int		i;
+	long	start;
 
 	i = 0;
 	while (i < input->num_of_phil)
 	{
 		t = now();
-		since_last = t - get_long(&(input->philos[i].lock), &(input->philos[i].last->tv_sec));
+		since_last = t - get_long(&(input->philos[i].lock),
+			&(input->philos[i].last->tv_sec));
 		if (since_last >= input->time_to_die)
+		{
+			start = get_long(&(input->lock), input->start);
+			print_action(&(input->lock), &input->philos[i], start, DIE);
 			return (i);
+		}
 		i++;
 	}
 	return (-1);
@@ -60,7 +66,6 @@ int	check_meals(t_input *input)
 
 void	droutine(t_input *input)
 {
-	long	start;
 	int		dead_i;
 
 	while (1)
@@ -68,8 +73,6 @@ void	droutine(t_input *input)
 		dead_i = check_death(input);
 		if (dead_i != -1)
 		{
-			start = get_long(&(input->lock), input->start);
-			print_action(&(input->lock), &input->philos[dead_i], start, DIE);
 			kill_philos(input);
 			break ;
 		}
@@ -78,7 +81,6 @@ void	droutine(t_input *input)
 			kill_philos(input);
 			break ;
 		}
-		usleep(1000);
 	}
 	// free_input(input);
 }

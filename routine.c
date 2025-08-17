@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 19:46:58 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 20:43:20 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	eating(t_philo *philo)
 		&& !get_bool(&(philo->lock), philo->die))
 	{
 		now();
-		usleep(500);
+		usleep(100);
 	}
 	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	pthread_mutex_unlock(philo->lfork);
@@ -75,7 +75,7 @@ void	sleeping(t_philo *philo)
 	usleep(philo->time_to_sleep / 2);
 	while (now() - since_sleep < philo->time_to_sleep
 		&& !get_bool(&(philo->lock), philo->die))
-		usleep(500);
+		usleep(100);
 }
 
 void	*routine(void *philos)

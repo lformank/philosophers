@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 19:46:10 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 20:45:12 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,9 @@ int	setup_philos(t_input *input, long ac, char *av[])
 	}
 	set_long(&(input->lock), input->start, now());
 	set_bool(&(input->lock), &(input->ready), true);
+	usleep(500);
+	while (!get_bool(&(input->lock), &(input->ready)))
+		;
 	droutine(input);
 	while (--i >= 0)
 		pthread_join(*(input)->philos[i].philo, NULL);
