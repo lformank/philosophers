@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 15:15:13 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 15:48:19 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,13 +68,13 @@ void	eating(t_philo *philo)
 	struct timeval	t;
 
 	get_fork(philo);
-	set_long(&(philo->input->lock), &(philo->last->tv_sec), now());
+	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, EATING);
 	usleep(philo->time_to_eat / 2);
 	while (philo->time_to_sleep < philo->time_to_eat
 		&& !get_bool(&(philo->lock), philo->die))
 		t.tv_sec = now();
-	set_long(&(philo->input->lock), &(philo->last->tv_sec), now());
+	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	pthread_mutex_unlock(philo->lfork);
 	pthread_mutex_unlock(philo->rfork);
 }
@@ -87,7 +87,7 @@ void	sleeping(t_philo *philo)
 	if (get_bool(&(philo->lock), philo->die))
 		return ;
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, SLEEPING);
-	usleep((t.tv_sec - philo->timer->tv_sec) / 2);
+	usleep(philo->time_to_sleep / 2);
 	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_sleep
 		&& !get_bool(&(philo->lock), philo->die))
 		t.tv_sec = now();
@@ -95,29 +95,29 @@ void	sleeping(t_philo *philo)
 
 void	*routine(void *philos)
 {
-	t_philo	philo;
+	t_philo	*philo;
 	long		i;
 
 	i = 0;
-	philo = *(t_philo *)philos;
-	while (!get_bool(&(philo.input->lock), &(philo.input->ready)))
+	philo = (t_philo *)philos;
+	while (!get_bool(&(philo->input->lock), &(philo->input->ready)))
 		;
-	set_long(&(philo.input->lock), &(philo.start->tv_sec), now());
-	set_long(&(philo.input->lock), &(philo.last->tv_sec), now());
-	if (philo.num % 2 == 1)
-		thinking(&philo);
-	while (!get_bool(&(philo.lock), philo.die))
+	set_long(&(philo->lock), &(philo->start->tv_sec), now());
+	set_long(&(philo->lock), &(philo->last->tv_sec), now());
+	if (philo->num % 2 == 1)
+		thinking(philo);
+	while (!get_bool(&(philo->lock), philo->die))
 	{
-		eating(&philo);
-		if (philo.num_of_meals != 0 && ++i == philo.num_of_meals)
-			set_bool(&(philo.lock_last), philo.full, true);
-		if (get_bool(&(philo.lock), philo.die))
+		eating(philo);
+		if (philo->num_of_meals != 0 && ++i == philo->num_of_meals)
+			set_bool(&(philo->lock_last), philo->full, true);
+		if (get_bool(&(philo->lock), philo->die))
 			break ;
-		sleeping(&philo);
-		if (get_bool(&(philo.lock), philo.die))
+		sleeping(philo);
+		if (get_bool(&(philo->lock), philo->die))
 			break ;
-		thinking(&philo);
-		if (get_bool(&(philo.lock), philo.die))
+		thinking(philo);
+		if (get_bool(&(philo->lock), philo->die))
 			break ;
 	}
 	return (philos);
