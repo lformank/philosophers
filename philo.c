@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:14:25 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 17:19:18 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 19:17:29 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	main(int ac, char **av)
 {
 	t_input	input;
 
-	if (!init(ac, av, &input))
+	if (!init(ac, av))
 		return (0);
 	if (!setup_input(ac, av, &input))
 	{

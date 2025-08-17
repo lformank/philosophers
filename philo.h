@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 18:51:31 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 19:47:09 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ typedef struct s_philo
 }	t_philo;
 
 /* INICIALIZE */
-long			init(long ac, char *av[], t_input *input);
+int			init(long ac, char *av[]);
 long			setup_input(long ac, char *av[], t_input *input);
 int				setup_philos(t_input *input, long ac, char *av[]);
 long			setup_philo(t_philo *philo, long i, long ac, char *av[]);

@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 19:12:13 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 19:46:10 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ long	setup_input(long ac, char *av[], t_input *input)
 	return (1);
 }
 
-long	init(long ac, char *av[], t_input *input)
+int	init(long ac, char *av[])
 {
 	if (ac < 5 || ac > 6)
 	{
@@ -159,12 +159,6 @@ long	init(long ac, char *av[], t_input *input)
 	if (!is_it_num(av, ac))
 	{
 		wrong_input();
-		return (0);
-	}
-	input = malloc(1 * sizeof(t_input));
-	if (!input)
-	{
-		printf("Error in allocating!");
 		return (0);
 	}
 	return (1);

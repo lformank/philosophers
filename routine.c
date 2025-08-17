@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 19:09:18 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 19:46:58 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void	eating(t_philo *philo)
 	long	since_eat;
 
 	get_fork(philo);
-	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	print_action(&(philo->input->lock), philo, *(philo->input->start), EATING);
 	usleep(philo->time_to_eat / 2);
 	since_eat = now();

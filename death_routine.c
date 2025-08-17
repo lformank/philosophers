@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 18:56:35 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 19:19:49 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	check_death(t_input *input)
 	int		i;
 
 	i = 0;
-	while (i <= input->num_of_phil)
+	while (i < input->num_of_phil)
 	{
 		t = now();
 		since_last = t - get_long(&(input->philos[i].lock), &(input->philos[i].last->tv_sec));
