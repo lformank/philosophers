@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 11:12:14 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 22:40:39 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 22:54:28 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,11 @@ void	print_action(pthread_mutex_t *lock, t_philo *philo, long time,
 
 	pthread_mutex_lock(lock);
 	t = now();
+	if (philo->input->dead == true && to_print != DIE)
+	{
+		pthread_mutex_unlock(lock);
+		return;
+	}
 	if (to_print == 0 && !get_bool(&(philo->lock), philo->die))
 		printf("%ld %d has taken a fork\n", t - time, philo->num);
 	else if (to_print == 1 && !get_bool(&(philo->lock), philo->die))

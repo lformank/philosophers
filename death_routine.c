@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 22:41:27 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 22:53:14 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ int	check_death(t_input *input)
 				&(input->philos[i].last->tv_sec));
 		if (since_last >= input->time_to_die)
 		{
+			set_bool(&(input->lock), &(input->dead), true);
 			start = get_long(&(input->lock), input->start);
 			print_action(&(input->lock), &input->philos[i], start, DIE);
 			return (i);
@@ -61,6 +62,7 @@ int	check_meals(t_input *input)
 			count++;
 		if (count == input->num_of_phil)
 		{
+			set_bool(&(input->lock), &(input->dead), true);
 			start = get_long(&(input->lock), input->start);
 			print_action(&(input->lock), &input->philos[i], start, FULL);
 			return (1);

@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 22:17:31 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 22:50:27 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ int	setup_input(long ac, char *av[], t_input *input)
 	if (ac == 6)
 		input->num_of_meals = ft_atoi(av[5]);
 	input->ready = false;
+	input->dead = false;
 	input->philos = malloc(sizeof(t_philo) * (input->num_of_phil));
 	if (!input->philos)
 		return (0);
