@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 17:29:37 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 19:12:13 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,6 @@ long	malloc_philo(t_philo *philo)
 {
 	philo->philo = malloc(sizeof(pthread_t) * (philo->num_of_phil));
 	if (!philo->philo)
-		return (0);
-	philo->start = malloc(sizeof(struct timeval) * 1);
-	if (!philo->start)
 		return (0);
 	philo->last = malloc(sizeof(struct timeval) * 1);
 	if (!philo->last)
@@ -82,7 +79,7 @@ void	*aroutine(void *philos)
 	philo = *(t_philo *)philos;
 	while (!get_bool(&(philo.lock), &(philo.input->ready)))
 		;
-	set_long(&(philo.lock), &(philo.start->tv_sec), now());
+	set_long(&(philo.input->lock), philo.input->start, now());
 	usleep(philo.time_to_die / 2);
 	since_start = now();
 	while (now() - since_start < philo.time_to_sleep &&
@@ -117,7 +114,8 @@ int	setup_philos(t_input *input, long ac, char *av[])
 			}
 		}
 	}
-	set_bool(&(input->lock), &input->ready, true);
+	set_long(&(input->lock), input->start, now());
+	set_bool(&(input->lock), &(input->ready), true);
 	droutine(input);
 	while (--i >= 0)
 		pthread_join(*(input)->philos[i].philo, NULL);
@@ -136,6 +134,9 @@ long	setup_input(long ac, char *av[], t_input *input)
 	input->ready = false;
 	input->philos = malloc(sizeof(t_philo) * (input->num_of_phil));
 	if (!input->philos)
+		return (0);
+	input->start = malloc(sizeof(long) * 1);
+	if (!input->start)
 		return (0);
 	input->ate = false;
 	input->dead = false;

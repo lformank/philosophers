@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 18:39:59 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 18:56:35 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,7 @@ void	droutine(t_input *input)
 		dead_i = check_death(input);
 		if (dead_i != -1)
 		{
-			start = get_long(&(input->philos[dead_i].lock),
-				&input->philos[dead_i].start->tv_sec);
+			start = get_long(&(input->lock), input->start);
 			print_action(&(input->lock), &input->philos[dead_i], start, DIE);
 			kill_philos(input);
 			break ;

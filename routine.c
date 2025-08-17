@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 18:41:29 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 19:09:18 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,8 @@ void	thinking(t_philo *philo)
 {
 	if (get_bool(&(philo->lock), philo->die))
 		return ;
-	print_action(&(philo->input->lock), philo, philo->start->tv_sec, THINKING);
+	print_action(&(philo->input->lock), philo, *(philo->input->start), THINKING);
 	usleep(500);
-	while (philo->lfork->__data.__lock && philo->rfork->__data.__lock)
-	{
-		if (get_bool(&(philo->lock), philo->die))
-			return ;
-	}
 }
 
 void	get_fork(t_philo *philo)
@@ -46,8 +41,8 @@ void	get_fork(t_philo *philo)
 		pthread_mutex_lock(philo->lfork);
 		pthread_mutex_lock(philo->rfork);
 	}
-	print_action(&(philo->input->lock), philo, philo->start->tv_sec, FORKING);
-	print_action(&(philo->input->lock), philo, philo->start->tv_sec, FORKING);
+	print_action(&(philo->input->lock), philo, *(philo->input->start), FORKING);
+	print_action(&(philo->input->lock), philo, *(philo->input->start), FORKING);
 }
 
 void	eating(t_philo *philo)
@@ -56,7 +51,7 @@ void	eating(t_philo *philo)
 
 	get_fork(philo);
 	set_long(&(philo->lock), &(philo->last->tv_sec), now());
-	print_action(&(philo->input->lock), philo, philo->start->tv_sec, EATING);
+	print_action(&(philo->input->lock), philo, *(philo->input->start), EATING);
 	usleep(philo->time_to_eat / 2);
 	since_eat = now();
 	while (now() - since_eat < philo->time_to_eat
@@ -77,7 +72,7 @@ void	sleeping(t_philo *philo)
 	since_sleep = now();
 	if (get_bool(&(philo->lock), philo->die))
 		return ;
-	print_action(&(philo->input->lock), philo, philo->start->tv_sec, SLEEPING);
+	print_action(&(philo->input->lock), philo, *(philo->input->start), SLEEPING);
 	usleep(philo->time_to_sleep / 2);
 	while (now() - since_sleep < philo->time_to_sleep
 		&& !get_bool(&(philo->lock), philo->die))
@@ -93,7 +88,6 @@ void	*routine(void *philos)
 	philo = (t_philo *)philos;
 	while (!get_bool(&(philo->input->lock), &(philo->input->ready)))
 		;
-	set_long(&(philo->lock), &(philo->start->tv_sec), now());
 	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	if (philo->num % 2 == 1)
 		thinking(philo);
