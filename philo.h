@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/16 17:35:24 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 11:01:01 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,12 +51,12 @@ typedef struct s_input
 
 typedef struct s_philo
 {
-	long				num;
-	long				num_of_phil;
-	long				time_to_die;
-	long				time_to_eat;
-	long				time_to_sleep;
-	long				num_of_meals;
+	int				num;
+	int				num_of_phil;
+	long			time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				num_of_meals;
 	enum e_mode		action;
 	t_input			*input;
 	pthread_t		*philo;
@@ -73,7 +73,7 @@ typedef struct s_philo
 /* INICIALIZE */
 long			init(long ac, char *av[], t_input *input);
 long			setup_input(long ac, char *av[], t_input *input);
-long			setup_philos(t_input *input, long ac, char *av[]);
+int				setup_philos(t_input *input, long ac, char *av[]);
 long			setup_philo(t_philo *philo, long i, long ac, char *av[]);
 long			setup_forks(t_input *input);
 

@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/16 17:55:41 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 11:21:41 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,16 +28,15 @@ void	get_time(t_philo *philo, struct timeval *t)
 	philo->timer->tv_sec = philo->timer->tv_sec * 1000 + philo->timer->tv_usec
 		/ 1000;
 	pthread_mutex_unlock(&(philo->lock));
-	now(&(philo)->lock, t);
+	now(&(philo->lock), t);
 }
 
 void	thinking(t_philo *philo)
 {
-	if (get_bool(&philo->lock, philo->die))
+	if (get_bool(&(philo->lock), philo->die))
 		return ;
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, THINKING);
 	usleep(500);
-	// printf("thinking\tlfork: %d\trfork: %d\n", philo->lfork.__data.__lock, philo->rfork.__data.__lock);
 	while (philo->lfork.__data.__lock && philo->rfork.__data.__lock)
 	{
 		if (get_bool(&(philo->lock), philo->die))
@@ -49,15 +48,14 @@ void	get_fork(t_philo *philo)
 {
 	if (philo->num_of_phil % 2 == 1)
 	{
-		pthread_mutex_lock((&philo->lfork));
-		pthread_mutex_lock((&philo->rfork));
+		pthread_mutex_lock(&(philo->lfork));
+		pthread_mutex_lock(&(philo->rfork));
 	}
 	else
 	{
 		pthread_mutex_lock(&(philo->rfork));
 		pthread_mutex_lock(&(philo->lfork));
 	}
-	// printf("eating\tlfork: %d\trfork: %d\n", philo->lfork.__data.__lock, philo->rfork.__data.__lock);
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, FORKING);
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, FORKING);
 }
@@ -67,16 +65,16 @@ void	eating(t_philo *philo)
 	struct timeval	t;
 
 	get_fork(philo);
+	now(&(philo->lock), philo->last);
 	get_time(philo, &t);
-	now(&(philo)->lock, philo->last);
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, EATING);
 	usleep((t.tv_sec - philo->timer->tv_sec) / 2);
 	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_eat
-		&& !get_bool(&philo->lock, philo->die))
-		now(&(philo)->lock, &t);
-	pthread_mutex_unlock(&philo->lfork);
-	pthread_mutex_unlock(&philo->rfork);
-	now(&(philo)->lock, philo->last);
+		&& !get_bool(&(philo->lock), philo->die))
+		now(&(philo->lock), &t);
+	pthread_mutex_unlock(&(philo->lfork));
+	pthread_mutex_unlock(&(philo->rfork));
+	now(&(philo->lock), philo->last);
 }
 
 void	sleeping(t_philo *philo)
@@ -84,13 +82,13 @@ void	sleeping(t_philo *philo)
 	struct timeval	t;
 
 	get_time(philo, &t);
-	if (get_bool(&philo->lock, philo->die))
+	if (get_bool(&(philo->lock), philo->die))
 		return ;
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, SLEEPING);
 	usleep((t.tv_sec - philo->timer->tv_sec) / 2);
 	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_sleep
-		&& !get_bool(&philo->lock, philo->die))
-		now(&(philo)->lock, &t);
+		&& !get_bool(&(philo->lock), philo->die))
+		now(&(philo->lock), &t);
 }
 
 void	*routine(void *philos)
@@ -100,12 +98,14 @@ void	*routine(void *philos)
 
 	i = 0;
 	philo = *(t_philo *)philos;
-	while (!get_bool(&(philo.input->lock), &philo.input->ready))
+	while (!get_bool(&(philo.input->lock), &(philo.input->ready)))
 		;
 	now(&(philo.lock), philo.start);
 	now(&(philo.lock), philo.last);
 	if (philo.num % 2 == 1)
+	{
 		thinking(&philo);
+	}
 	while (!get_bool(&(philo.lock), philo.die))
 	{
 		eating(&philo);
@@ -122,10 +122,3 @@ void	*routine(void *philos)
 	}
 	return (philos);
 }
-// long get_long(t_philo *philo, long val)
-// {
-// 	long temp; 
-// 	pthread_mutex_lock(&philo->lock);
-// 	temp = 
-
-// }
