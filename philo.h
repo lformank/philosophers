@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 16:11:01 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 17:29:29 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,11 @@ typedef struct s_philo
 	t_input			*input;
 	pthread_t		*philo;
 	pthread_mutex_t	lock;
-	pthread_mutex_t	lock_last;
 	pthread_mutex_t	*lfork;
 	pthread_mutex_t	*rfork;
 	bool			*die;
 	bool			*full;
 	struct timeval	*start;
-	struct timeval	*timer;
 	struct timeval	*last;
 }	t_philo;
 
@@ -82,7 +80,6 @@ long			setup_forks(t_input *input);
 long			ft_atoi(const char *nptr);
 long			ft_strlen(const char *s);
 long			now(void);
-long			get_time(t_philo *philo);
 void			free_input(t_input *input);
 void			set_bool(pthread_mutex_t *lock, bool *variable, bool value);
 void			set_long(pthread_mutex_t *lock, long *variable, long value);

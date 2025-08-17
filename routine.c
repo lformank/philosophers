@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 17:09:30 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 17:30:15 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,6 @@ long	now(void)
 
 	gettimeofday(&t, NULL);
 	t.tv_sec = t.tv_sec * 1000 + t.tv_usec / 1000;
-	return (t.tv_sec);
-}
-
-long	get_time(t_philo *philo)
-{
-	struct timeval	t;
-
-	pthread_mutex_lock(&(philo->lock));
-	gettimeofday(philo->timer, NULL);
-	philo->timer->tv_sec = philo->timer->tv_sec * 1000 + philo->timer->tv_usec
-		/ 1000;
-	pthread_mutex_unlock(&(philo->lock));
-	t.tv_sec = now();
 	return (t.tv_sec);
 }
 
@@ -65,18 +52,18 @@ void	get_fork(t_philo *philo)
 
 void	eating(t_philo *philo)
 {
-	struct timeval	t;
+	long	since_eat;
 
 	get_fork(philo);
 	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, EATING);
-	t.tv_sec = get_time(philo);
 	usleep(philo->time_to_eat / 2);
-	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_eat
+	since_eat = now();
+	while (now() - since_eat < philo->time_to_eat
 		&& !get_bool(&(philo->lock), philo->die))
 	{
-		t.tv_sec = now();
-		printf("last: %ld\n", t.tv_sec - philo->timer->tv_sec);
+		now();
+		printf("last: %ld\n", now() - since_eat);
 	}
 	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	pthread_mutex_unlock(philo->lfork);
@@ -85,16 +72,16 @@ void	eating(t_philo *philo)
 
 void	sleeping(t_philo *philo)
 {
-	struct timeval	t;
+	long	since_sleep;
 
-	t.tv_sec = get_time(philo);
+	since_sleep = now();
 	if (get_bool(&(philo->lock), philo->die))
 		return ;
 	print_action(&(philo->input->lock), philo, philo->start->tv_sec, SLEEPING);
 	usleep(philo->time_to_sleep / 2);
-	while (t.tv_sec - philo->timer->tv_sec < philo->time_to_sleep
+	while (now() - since_sleep < philo->time_to_sleep
 		&& !get_bool(&(philo->lock), philo->die))
-		t.tv_sec = now();
+		;
 }
 
 void	*routine(void *philos)

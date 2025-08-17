@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 17:06:11 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 17:29:37 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,6 @@ long	malloc_philo(t_philo *philo)
 {
 	philo->philo = malloc(sizeof(pthread_t) * (philo->num_of_phil));
 	if (!philo->philo)
-		return (0);
-	philo->timer = malloc(sizeof(struct timeval) * 1);
-	if (!philo->timer)
 		return (0);
 	philo->start = malloc(sizeof(struct timeval) * 1);
 	if (!philo->start)
@@ -72,7 +69,6 @@ long	setup_philo(t_philo *philo, long i, long ac, char *av[])
 	else
 		philo->lfork = &(philo->input->forks[philo->num]);
 	pthread_mutex_init(&(philo->lock), NULL);
-	pthread_mutex_init(&(philo->lock_last), NULL);
 	set_bool(&(philo->lock), (philo)->full, false);
 	set_bool(&(philo->lock), (philo)->die, false);
 	return (1);
@@ -81,18 +77,17 @@ long	setup_philo(t_philo *philo, long i, long ac, char *av[])
 void	*aroutine(void *philos)
 {
 	t_philo	philo;
-	struct timeval	t;
+	long	since_start;
 
 	philo = *(t_philo *)philos;
 	while (!get_bool(&(philo.lock), &(philo.input->ready)))
 		;
-	t.tv_sec = get_time(&philo);
 	set_long(&(philo.lock), &(philo.start->tv_sec), now());
-	set_long(&(philo.lock_last), &(philo.last->tv_sec), now());
 	usleep(philo.time_to_die / 2);
-	while (t.tv_sec - get_long(&(philo.input->lock), &(philo.start->tv_sec)) < philo.time_to_sleep &&
+	since_start = now();
+	while (now() - since_start < philo.time_to_sleep &&
 		!get_bool(&(philo.lock), philo.die))
-		t.tv_sec = now();
+		;
 	return (philos);
 }
 
