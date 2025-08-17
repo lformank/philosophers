@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 14:35:41 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 14:41:34 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,8 @@ void	*routine(void *philos)
 	philo = *(t_philo *)philos;
 	while (!get_bool(&(philo.input->lock), &(philo.input->ready)))
 		;
-	set_long(&(philo.lock), &(philo.start->tv_sec), now());
-	set_long(&(philo.lock), &(philo.last->tv_sec), now());
+	set_long(&(philo.input->lock), &(philo.start->tv_sec), now());
+	set_long(&(philo.input->lock), &(philo.last->tv_sec), now());
 	if (philo.num % 2 == 1)
 		thinking(&philo);
 	while (!get_bool(&(philo.lock), philo.die))

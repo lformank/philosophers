@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 14:29:13 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/17 14:42:56 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,10 +87,10 @@ void	*lone_routine(void *philos)
 	while (!get_bool(&(philo.lock), &(philo.input->ready)))
 		;
 	t.tv_sec = get_time(&philo);
-	philo.start->tv_sec = now();
-	philo.last->tv_sec = now();
+	set_long(&(philo.input->lock), &(philo.start->tv_sec), now());
+	set_long(&(philo.input->lock), &(philo.last->tv_sec), now());
 	usleep(philo.time_to_die / 2);
-	while (t.tv_sec - philo.start->tv_sec < philo.time_to_sleep &&
+	while (t.tv_sec - get_long(&(philo.input->lock), &(philo.start->tv_sec)) < philo.time_to_sleep &&
 		!get_bool(&(philo.lock), philo.die))
 		t.tv_sec = now();
 	return (philos);
