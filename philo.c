@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:14:25 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 22:28:31 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/18 19:21:27 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,16 @@ int	setup_philos(t_input *input, int ac, char *av[])
 	{
 		input->philos[0].input = input;
 		setup_philo(&(input)->philos[0], 0, ac, av);
-		pthread_create(input->philos[0].philo, NULL, &aroutine, input->philos);
+		if (pthread_create(input->philos[0].philo, NULL, &aroutine,
+				&input->philos[0]))
+		{
+			printf("Failed to create thread\n");
+			return (0);
+		}
 	}
 	else if (!more_philos(input, ac, av))
 		return (0);
-	set_long(&(input->lock), input->start, now());
 	set_bool(&(input->lock), &(input->ready), true);
-	usleep(500);
 	while (!get_bool(&(input->lock), &(input->ready)))
 		;
 	droutine(input);
@@ -100,21 +103,21 @@ int	main(int ac, char **av)
 	t_input	input;
 
 	if (!init(ac, av))
-		return (0);
+		return (1);
 	if (!setup_input(ac, av, &input))
 	{
 		free_input(&input);
-		return (0);
+		return (1);
 	}
 	if (!setup_forks(&input))
 	{
 		free_input(&input);
-		return (0);
+		return (1);
 	}
 	if (!setup_philos(&input, ac, av))
 	{
 		free_input(&input);
-		return (0);
+		return (1);
 	}
 	free_input(&input);
 	return (0);

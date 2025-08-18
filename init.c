@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 22:50:27 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/18 18:32:01 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,17 @@
 
 void	*aroutine(void *philos)
 {
-	t_philo	philo;
+	t_philo	*philo;
 	long	since_start;
 
-	philo = *(t_philo *)philos;
-	while (!get_bool(&(philo.lock), &(philo.input->ready)))
+	philo = (t_philo *)philos;
+	while (!get_bool(&(philo->input->lock), &(philo->input->ready)))
 		;
-	set_long(&(philo.input->lock), philo.input->start, now());
-	usleep(philo.time_to_die / 2);
+	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	since_start = now();
-	while (now() - since_start < philo.time_to_sleep
-		&& !get_bool(&(philo.lock), philo.die))
+	usleep((philo->time_to_die / 2) * 1000);
+	while (now() - since_start < philo->time_to_die && !get_bool(&(philo->lock),
+			philo->die))
 		;
 	return (philos);
 }
@@ -41,8 +41,7 @@ int	more_philos(t_input *input, int ac, char *av[])
 			|| pthread_create(input->philos[i].philo, NULL,
 				&routine, &input->philos[i]))
 		{
-			free_input(input);
-			printf("Failed to create thread\n");
+			write(2, "Failed to create thread\n", 24);
 			return (0);
 		}
 	}
@@ -72,9 +71,12 @@ int	setup_input(long ac, char *av[], t_input *input)
 
 int	init(long ac, char *av[])
 {
+	int	i;
+
+	i = 0;
 	if (ac < 5 || ac > 6)
 	{
-		wrong_input();
+		wrong_input(1);
 		return (0);
 	}
 	if (ft_atoi(av[1]) == 0)
@@ -82,9 +84,14 @@ int	init(long ac, char *av[])
 	if (av[5])
 		if (ft_atoi(av[5]) == 0)
 			return (0);
+	while (++i < ac)
+	{
+		if (ft_atoi(av[i]) == -1)
+			return (0);
+	}
 	if (!is_it_num(av, ac))
 	{
-		wrong_input();
+		wrong_input(3);
 		return (0);
 	}
 	return (1);

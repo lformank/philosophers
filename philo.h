@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 22:50:09 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/18 17:34:36 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void			*aroutine(void *philos);
 int				more_philos(t_input *input, int ac, char *av[]);
 
 /* UTILS */
-int				ft_atoi(const char *nptr);
+long			ft_atoi(const char *nptr);
 int				ft_strlen(const char *s);
 long			now(void);
 void			free_input(t_input *input);
@@ -90,7 +90,7 @@ void			print_action(pthread_mutex_t *lock, t_philo *philo, long time,
 					enum e_mode action);
 
 /* CONDITIONS */
-void			wrong_input(void);
+void			wrong_input(int error);
 long			is_it_num(char *av[], long ac);
 
 /* ROUTINE */

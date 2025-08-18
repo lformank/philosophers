@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 21:54:37 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/18 19:10:24 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,13 @@ void	eating(t_philo *philo)
 	long	since_eat;
 
 	get_fork(philo);
-	print_action(&(philo->input->lock), philo, *(philo->input->start), EATING);
-	usleep(philo->time_to_eat / 2);
+	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	since_eat = now();
+	print_action(&(philo->input->lock), philo, *(philo->input->start), EATING);
+	usleep((philo->time_to_eat / 2) * 1000);
 	while (now() - since_eat < philo->time_to_eat
 		&& !get_bool(&(philo->lock), philo->die))
-	{
-		now();
 		usleep(100);
-	}
 	set_long(&(philo->lock), &(philo->last->tv_sec), now());
 	pthread_mutex_unlock(philo->lfork);
 	pthread_mutex_unlock(philo->rfork);
@@ -65,7 +63,6 @@ void	sleeping(t_philo *philo)
 	if (get_bool(&(philo->lock), philo->die))
 		return ;
 	print_action(&(philo->input->lock), philo, *(philo->input->start), SLEEP);
-	usleep(philo->time_to_sleep / 2);
 	while (now() - since_sleep < philo->time_to_sleep
 		&& !get_bool(&(philo->lock), philo->die))
 		usleep(100);

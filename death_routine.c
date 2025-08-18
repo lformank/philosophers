@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 13:13:12 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 22:53:14 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/18 19:23:04 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,8 @@ int	check_meals(t_input *input)
 	{
 		if (get_bool(&(input->philos[i].lock), input->philos[i].full) == true)
 			count++;
-		if (count == input->num_of_phil)
+		if (count == input->num_of_meals)
 		{
-			set_bool(&(input->lock), &(input->dead), true);
 			start = get_long(&(input->lock), input->start);
 			print_action(&(input->lock), &input->philos[i], start, FULL);
 			return (1);
@@ -75,6 +74,8 @@ void	droutine(t_input *input)
 {
 	int		dead_i;
 
+	set_long(&(input->lock), input->start, now());
+	usleep(1000);
 	while (1)
 	{
 		dead_i = check_death(input);

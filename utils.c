@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 11:12:14 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 22:55:13 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/18 19:17:24 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	print_action(pthread_mutex_t *lock, t_philo *philo, long time,
 		printf("%ld %d is thinking\n", t - time, philo->num);
 	else if (to_print == 4 && !get_bool(&(philo->lock), philo->die))
 		printf("%ld %d died\n", t - time, philo->num);
-	else if (to_print == 5 && !get_bool(&(philo->lock), philo->die))
+	else if (to_print == 5 /*&& !get_bool(&(philo->lock), philo->die)*/)
 		printf("%ld philosophers are full!\n", t - time);
 	pthread_mutex_unlock(lock);
 }
@@ -82,28 +82,29 @@ int	ft_strlen(const char *s)
 	return (i);
 }
 
-int	ft_atoi(const char *nptr)
+long	ft_atoi(const char *nptr)
 {
-	int	i;
-	int	n;
-	int	minus;
-	int	no_num;
+	int		i;
+	long	n;
+	int		no_num;
 
 	i = -1;
 	n = 0;
-	minus = 1;
 	no_num = true;
 	while (nptr[++i])
 	{
 		if (nptr[i] == '-')
-			return (0);
+			break ;
 		if (nptr[i] != '\0' && nptr[i] >= '0' && nptr[i] <= '9')
 		{
 			n = (n * 10) + (nptr[i] - 48);
 			no_num = false;
 		}
 	}
-	if (no_num == true || (n * minus) > 2147483647 || (n * minus) < -2147483648)
-		return (0);
-	return (n * minus);
+	if (no_num == true || n > 2147483647 || n < -2147483648)
+	{
+		wrong_input(2);
+		return (-1);
+	}
+	return (n);
 }

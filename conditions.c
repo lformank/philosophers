@@ -6,17 +6,25 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/17 21:04:39 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/18 17:41:03 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	wrong_input(void)
+void	wrong_input(int error)
 {
-	write(2, "Wrong input.\nTry again using this format: \"./philo <num of \
-philosophers> <time to die> <time to eat> <time to sleep> <number of \
-meals>\"", 136);
+	if (error == 1)
+	{
+		write(2, "Wrong number of arguments.\n", 27);
+		write(2, "Try again using this format: \"./philo <num of philosophers>\
+ <time to die> <time to eat> <time to sleep> <number of meals>\".\n", 125);
+	}
+	else if (error == 2)
+		write(2, "Invalid argument. Arguments have to be in positive numeric \
+format and have max size of int.\n", 93);
+	else if (error == 3)
+		write(2, "Arguments are not numbers. Write them in ms format.\n", 52);
 	return ;
 }
 
