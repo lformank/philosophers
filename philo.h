@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:15:01 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/18 17:34:36 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/18 21:29:11 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,7 @@ enum	e_mode
 	EATING,
 	SLEEP,
 	THINKING,
-	DIE,
-	FULL
+	DIE
 };
 
 typedef struct s_input
@@ -57,7 +56,6 @@ typedef struct s_philo
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				num_of_meals;
-	enum e_mode		action;
 	t_input			*input;
 	pthread_t		*philo;
 	pthread_mutex_t	lock;

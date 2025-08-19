@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/18 19:10:24 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/19 18:05:35 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	thinking(t_philo *phil)
 	if (get_bool(&(phil->lock), phil->die))
 		return ;
 	print_action(&(phil->input->lock), phil, *(phil->input->start), THINKING);
-	usleep(500);
+	usleep(5000);
 }
 
 void	get_fork(t_philo *philo)
@@ -83,7 +83,7 @@ void	*routine(void *philos)
 	while (!get_bool(&(philo->lock), philo->die))
 	{
 		eating(philo);
-		if (philo->num_of_meals != 0 && ++i == philo->num_of_meals)
+		if (++i == philo->num_of_meals && philo->num_of_meals != 0)
 			set_bool(&(philo->lock), philo->full, true);
 		if (get_bool(&(philo->lock), philo->die))
 			break ;

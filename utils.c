@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 11:12:14 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/18 19:17:24 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/19 18:01:18 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ void	print_action(pthread_mutex_t *lock, t_philo *philo, long time,
 		printf("%ld %d is thinking\n", t - time, philo->num);
 	else if (to_print == 4 && !get_bool(&(philo->lock), philo->die))
 		printf("%ld %d died\n", t - time, philo->num);
-	else if (to_print == 5 /*&& !get_bool(&(philo->lock), philo->die)*/)
-		printf("%ld philosophers are full!\n", t - time);
 	pthread_mutex_unlock(lock);
 }
 

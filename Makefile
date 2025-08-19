@@ -6,12 +6,12 @@
 #    By: lformank <lformank@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/05 16:20:21 by lformank          #+#    #+#              #
-#    Updated: 2025/08/18 18:01:55 by lformank         ###   ########.fr        #
+#    Updated: 2025/08/18 21:18:08 by lformank         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g -pthread -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror -g -pthread #-fsanitize=thread
 RM = rm -f
 SUBJS = philo.c init.c utils.c routine.c conditions.c death_routine.c \
 		get_set.c

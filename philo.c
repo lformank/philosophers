@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:14:25 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/18 19:21:27 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/19 18:06:17 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,8 @@ int	setup_philos(t_input *input, int ac, char *av[])
 	}
 	else if (!more_philos(input, ac, av))
 		return (0);
+	set_long(&(input->lock), input->start, now());
 	set_bool(&(input->lock), &(input->ready), true);
-	while (!get_bool(&(input->lock), &(input->ready)))
-		;
 	droutine(input);
 	while (++i < input->num_of_phil)
 		pthread_join(*(input)->philos[i].philo, NULL);
@@ -47,6 +46,7 @@ static int	malloc_philo(t_philo *philo)
 	philo->last = malloc(sizeof(struct timeval) * 1);
 	if (!philo->last)
 		return (0);
+	philo->last->tv_sec = 0;
 	philo->die = malloc(sizeof(bool) * 1);
 	if (!philo->die)
 		return (0);
