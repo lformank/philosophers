@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 11:01:09 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/20 12:37:45 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/20 13:02:23 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,14 @@ void	wrong_input(int error)
 format and have max size of int.\n", 93);
 	else if (error == 3)
 		write(2, "Arguments are not numbers. Write them in ms format.\n", 52);
+	else if (error == 4)
+		write(2, "Couldnt setup input variables, mallock error\n", 45);
+	else if (error == 5)
+		write(2, "Couldnt setup forks, mallock or pthread_mutex_init error\n",
+			57);
+	else if (error == 6)
+		write(2, "Couldnt setup philos, mallock or pthread_mutex_init error\n",
+			58);
 	return ;
 }
 

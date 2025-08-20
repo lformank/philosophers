@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:14:25 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/20 12:55:09 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/20 13:08:44 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ int	setup_philos(t_input *input, int ac, char *av[])
 	if (input->num_of_phil == 1)
 	{
 		input->philos[0].input = input;
-		setup_philo(&(input)->philos[0], 0, ac, av);
+		if (!setup_philo(&(input)->philos[0], 0, ac, av))
+			return (0);
 		if (pthread_create(input->philos[0].philo, NULL, &aroutine,
 				&input->philos[0]))
 		{
@@ -69,7 +70,8 @@ int	setup_philo(t_philo *philo, int i, long ac, char *av[])
 		philo->lfork = &(philo->input->forks[0]);
 	else
 		philo->lfork = &(philo->input->forks[philo->num]);
-	pthread_mutex_init(&(philo->lock), NULL);
+	if (pthread_mutex_init(&(philo->lock), NULL))
+		return (0);
 	set_bool(&(philo->lock), &(philo->full), false);
 	set_bool(&(philo->lock), &(philo->die), false);
 	return (1);
@@ -102,16 +104,19 @@ int	main(int ac, char **av)
 		return (1);
 	if (!setup_input(ac, av, &input))
 	{
+		wrong_input(4);
 		free_input(&input);
 		return (1);
 	}
 	if (!setup_forks(&input))
 	{
+		wrong_input(5);
 		free_input(&input);
 		return (1);
 	}
 	if (!setup_philos(&input, ac, av))
 	{
+		wrong_input(6);
 		free_input(&input);
 		return (1);
 	}
