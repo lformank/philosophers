@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:14:25 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/19 18:06:17 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/20 12:55:09 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,8 @@ static int	malloc_philo(t_philo *philo)
 	if (!philo->last)
 		return (0);
 	philo->last->tv_sec = 0;
-	philo->die = malloc(sizeof(bool) * 1);
-	if (!philo->die)
-		return (0);
-	philo->full = malloc(sizeof(bool) * 1);
-	if (!philo->full)
-		return (0);
+	philo->die = false;
+	philo->die = false;
 	return (1);
 }
 
@@ -74,8 +70,8 @@ int	setup_philo(t_philo *philo, int i, long ac, char *av[])
 	else
 		philo->lfork = &(philo->input->forks[philo->num]);
 	pthread_mutex_init(&(philo->lock), NULL);
-	set_bool(&(philo->lock), (philo)->full, false);
-	set_bool(&(philo->lock), (philo)->die, false);
+	set_bool(&(philo->lock), &(philo->full), false);
+	set_bool(&(philo->lock), &(philo->die), false);
 	return (1);
 }
 

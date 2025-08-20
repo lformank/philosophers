@@ -6,7 +6,7 @@
 /*   By: lformank <lformank@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 18:20:17 by lformank          #+#    #+#             */
-/*   Updated: 2025/08/18 21:37:14 by lformank         ###   ########.fr       */
+/*   Updated: 2025/08/20 12:47:27 by lformank         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	*aroutine(void *philos)
 	since_start = now();
 	usleep((philo->time_to_die / 2) * 1000);
 	while (now() - since_start < philo->time_to_die && !get_bool(&(philo->lock),
-			philo->die))
+			&(philo->die)))
 		;
 	return (philos);
 }
